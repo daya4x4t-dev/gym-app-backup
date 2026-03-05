@@ -13,44 +13,7 @@ class CustomButton extends StatefulWidget {
   State<CustomButton> createState() => _CustomButtonState();
 }
 
-class _CustomButtonState extends State<CustomButton>
-    with TickerProviderStateMixin {
-  late final AnimationController _scaleController;
-  late final Animation<double> _scaleAnim;
-
-  late final AnimationController _pulseController;
-  late final Animation<double> _pulseAnim;
-
-  @override
-  void initState() {
-    super.initState();
-    // Tap scale animation
-    _scaleController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 100),
-      reverseDuration: const Duration(milliseconds: 200),
-    );
-    _scaleAnim = Tween<double>(begin: 1.0, end: 0.97).animate(
-      CurvedAnimation(parent: _scaleController, curve: Curves.easeOut),
-    );
-
-    // Breathing pulse animation
-    _pulseController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 3),
-    )..repeat(reverse: true);
-    _pulseAnim = Tween<double>(begin: 1.0, end: 1.03).animate(
-      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
-    );
-  }
-
-  @override
-  void dispose() {
-    _scaleController.dispose();
-    _pulseController.dispose();
-    super.dispose();
-  }
-
+class _CustomButtonState extends State<CustomButton> {
   void _handleTap() {
     HapticFeedback.lightImpact();
     widget.onTap();
@@ -58,25 +21,22 @@ class _CustomButtonState extends State<CustomButton>
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: Listenable.merge([_scaleAnim, _pulseAnim]),
-      builder: (context, child) {
-        return Transform.scale(
-          scale: _scaleAnim.value * _pulseAnim.value,
-          child: child,
-        );
-      },
-      child: Container(
+    return Container(
         height: 55,
         width: double.infinity,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(28),
           boxShadow: [
             BoxShadow(
-              color: AppTheme.accentRed.withValues(alpha: 0.35),
-              blurRadius: 18,
-              spreadRadius: 0,
-              offset: const Offset(0, 6),
+              color: const Color(0xFF8B0000).withValues(alpha: 0.3),
+              blurRadius: 15,
+              offset: const Offset(0, 5),
+            ),
+            BoxShadow(
+              color: AppTheme.accentRed.withValues(alpha: 0.25),
+              blurRadius: 25,
+              spreadRadius: -2,
+              offset: const Offset(0, 10),
             ),
           ],
         ),
@@ -84,41 +44,35 @@ class _CustomButtonState extends State<CustomButton>
           color: Colors.transparent,
           child: InkWell(
             onTap: _handleTap,
-            onTapDown: (_) => _scaleController.forward(),
-            onTapUp: (_) => _scaleController.reverse(),
-            onTapCancel: () => _scaleController.reverse(),
             borderRadius: BorderRadius.circular(28),
             splashColor: Colors.white.withValues(alpha: 0.1),
             highlightColor: Colors.transparent,
             child: Ink(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(28),
-                gradient: const LinearGradient(
-                  colors: [
-                    Color(0xFF8B0000), // Dark Red
-                    Color(0xFFFF2E2E), // Bright Red Center
-                    Color(0xFF8B0000), // Dark Red
-                  ],
-                  begin: Alignment.centerLeft,
-                  end: Alignment.centerRight,
-                  stops: [0.0, 0.5, 1.0],
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(28),
+                  gradient: const LinearGradient(
+                    colors: [
+                      Color(0xFF8B0000), // Dark Red
+                      Color(0xFFFF2E2E), // Bright Red
+                    ],
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                  ),
                 ),
-              ),
               child: Center(
                 child: Text(
                   widget.text,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 0.6,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 1.0,
                   ),
                 ),
               ),
             ),
           ),
         ),
-      ),
-    );
+      );
   }
 }

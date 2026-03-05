@@ -30,7 +30,6 @@ class CustomTextField extends StatefulWidget {
 
 class _CustomTextFieldState extends State<CustomTextField> {
   late final FocusNode _focusNode;
-  bool _hasFocus = false;
   bool _obscure = true;
 
   @override
@@ -41,7 +40,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
   }
 
   void _onFocusChange() {
-    setState(() => _hasFocus = _focusNode.hasFocus);
+    setState(() {});
   }
 
   @override
@@ -57,22 +56,14 @@ class _CustomTextFieldState extends State<CustomTextField> {
       curve: Curves.easeOut,
       decoration: BoxDecoration(
         color: AppTheme.fieldBg,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: _hasFocus
-            ? [
-                BoxShadow(
-                  color: AppTheme.accentRed.withValues(alpha: 0.28),
-                  blurRadius: 12,
-                  spreadRadius: 0,
-                ),
-              ]
-            : [],
-        border: Border.all(
-          color: _hasFocus
-              ? AppTheme.accentRed.withValues(alpha: 0.7)
-              : Colors.transparent,
-          width: 1.2,
-        ),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       height: 55,
       child: TextField(
@@ -84,13 +75,15 @@ class _CustomTextFieldState extends State<CustomTextField> {
         onChanged: widget.onChanged,
         style: const TextStyle(
           color: Colors.white,
-          fontSize: 15,
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
         ),
         decoration: InputDecoration(
           hintText: widget.hint,
           hintStyle: TextStyle(
-            color: Colors.white.withValues(alpha: 0.35),
-            fontSize: 15,
+            color: Colors.white.withValues(alpha: 0.4),
+            fontSize: 16,
+            fontWeight: FontWeight.w400,
           ),
           prefixIcon: widget.prefixIcon != null
               ? Padding(
@@ -110,7 +103,27 @@ class _CustomTextFieldState extends State<CustomTextField> {
                   ),
                 )
               : null,
-          border: InputBorder.none,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide(
+              color: Colors.white.withValues(alpha: 0.1),
+              width: 1,
+            ),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide(
+              color: Colors.white.withValues(alpha: 0.1),
+              width: 1,
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: const BorderSide(
+              color: AppTheme.accentRed,
+              width: 1.5,
+            ),
+          ),
           contentPadding: const EdgeInsets.symmetric(
             horizontal: 18,
             vertical: 16,

@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../utils/auth_background.dart';
 import '../utils/app_theme.dart';
@@ -6,6 +5,7 @@ import '../widgets/custom_button.dart';
 import '../widgets/custom_textfield.dart';
 import 'signup_screen.dart';
 import 'forgot_password_screen.dart';
+import 'login_success_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -14,27 +14,7 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _logoCtrl;
-  late final Animation<double> _logoAnim;
-
-  @override
-  void initState() {
-    super.initState();
-    _logoCtrl = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 1),
-    )..forward();
-    _logoAnim = CurvedAnimation(parent: _logoCtrl, curve: Curves.easeIn);
-  }
-
-  @override
-  void dispose() {
-    _logoCtrl.dispose();
-    super.dispose();
-  }
-
+class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return AuthBackground(
@@ -45,12 +25,10 @@ class _LoginScreenState extends State<LoginScreen>
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // ── Animated Logo ──────────────────────────────────────
-                FadeTransition(
-                  opacity: _logoAnim,
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 24),
-                    child: ShaderMask(
+                // ── Logo ──────────────────────────────────────────────
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 24),
+                  child: ShaderMask(
                       shaderCallback: (bounds) => const LinearGradient(
                         colors: [Color(0xFF8B0000), Color(0xFFFF2E2E)],
                         begin: Alignment.topLeft,
@@ -60,9 +38,9 @@ class _LoginScreenState extends State<LoginScreen>
                         'NIP',
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 58,
+                          fontSize: 62,
                           fontWeight: FontWeight.w900,
-                          letterSpacing: 10,
+                          letterSpacing: 12,
                           shadows: [
                             Shadow(
                               color: Color(0xFFFF2E2E), // Bright Red Glow
@@ -74,62 +52,43 @@ class _LoginScreenState extends State<LoginScreen>
                       ),
                     ),
                   ),
-                ),
 
                 // ── Main Login Card ──────────────────────────────────────
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(24),
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            Colors.white.withValues(alpha: 0.12),
-                            Colors.white.withValues(alpha: 0.05),
-                          ],
-                        ),
-                        borderRadius: BorderRadius.circular(24),
-                        border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.08),
-                          width: 1,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.4),
-                            blurRadius: 24,
-                            spreadRadius: 0,
-                            offset: const Offset(0, 8),
-                          ),
-                          // Subtle inner-glow-like shadow effect
-                          BoxShadow(
-                            color: Colors.white.withValues(alpha: 0.02),
-                            blurRadius: 0,
-                            spreadRadius: -2,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.6),
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.1),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.4),
+                        blurRadius: 20,
+                        offset: const Offset(0, 10),
                       ),
-                      padding: const EdgeInsets.all(24),
-                      child: Column(
+                    ],
+                  ),
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             'Welcome Back',
                             style: TextStyle(
                               color: Colors.white,
-                              fontSize: 28,
+                              fontSize: 32,
                               fontWeight: FontWeight.w800,
+                              letterSpacing: -0.5,
                             ),
                           ),
-                          const SizedBox(height: 4),
+                          const SizedBox(height: 8),
                           Text(
                             'Sign in to continue your journey',
                             style: TextStyle(
-                              color: Colors.white.withValues(alpha: 0.45),
-                              fontSize: 14,
+                              color: Colors.white.withValues(alpha: 0.5),
+                              fontSize: 15,
+                              fontWeight: FontWeight.w400,
                             ),
                           ),
                           const SizedBox(height: 30),
@@ -161,18 +120,25 @@ class _LoginScreenState extends State<LoginScreen>
                                 padding: EdgeInsets.zero,
                                 minimumSize: const Size(0, 36),
                               ),
-                              child: const Text(
-                                'Forgot Password?',
-                                style: TextStyle(
-                                  color: Color(0xFFFF2E2E), // Accent Red
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w500,
+                                child: Text(
+                                  'Forgot Password?',
+                                  style: TextStyle(
+                                    color: const Color(0xFFFF2E2E), // Accent Red
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
-                              ),
                             ),
                           ),
                           const SizedBox(height: 8),
-                          CustomButton(text: 'SIGN IN', onTap: () {}),
+                          CustomButton(
+                            text: 'SIGN IN',
+                            onTap: () => Navigator.push(
+                              context,
+                              AppTheme.fadeSlideRoute(
+                                  const LoginSuccessScreen()),
+                            ),
+                          ),
                           const SizedBox(height: 22),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -180,8 +146,8 @@ class _LoginScreenState extends State<LoginScreen>
                               Text(
                                 "Don't have an account? ",
                                 style: TextStyle(
-                                  color: Colors.white.withValues(alpha: 0.5),
-                                  fontSize: 14,
+                                  color: Colors.white.withValues(alpha: 0.55),
+                                  fontSize: 15,
                                 ),
                               ),
                               GestureDetector(
@@ -189,11 +155,11 @@ class _LoginScreenState extends State<LoginScreen>
                                   context,
                                   AppTheme.fadeSlideRoute(const SignupScreen()),
                                 ),
-                                child: const Text(
+                                child: Text(
                                   'Sign Up',
                                   style: TextStyle(
                                     color: Colors.white,
-                                    fontSize: 14,
+                                    fontSize: 15,
                                     fontWeight: FontWeight.w700,
                                   ),
                                 ),
@@ -203,84 +169,56 @@ class _LoginScreenState extends State<LoginScreen>
                         ],
                       ),
                     ),
-                  ),
-                ),
 
-                const SizedBox(height: 20),
-
-                // ── Social Login Glassmorphism Container ─────────────────
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(22),
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: 0.40),
-                        borderRadius: BorderRadius.circular(22),
-                        border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.10),
-                          width: 1,
+                const SizedBox(height: 32),
+                Row(
+                  children: [
+                    Expanded(child: Divider(color: Colors.white.withValues(alpha: 0.1), thickness: 1)),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Text(
+                        'OR',
+                        style: TextStyle(
+                          color: Colors.white.withValues(alpha: 0.3),
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 1.5,
                         ),
-                        boxShadow: [
-                          // Outer dark shadow
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.45),
-                            blurRadius: 20,
-                            spreadRadius: 0,
-                            offset: const Offset(0, 6),
-                          ),
-                          // Subtle red glow accent
-                          BoxShadow(
-                            color: const Color(0xFFFF2E2E).withValues(alpha: 0.08),
-                            blurRadius: 28,
-                            spreadRadius: 2,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 28, vertical: 22),
-                      child: Column(
-                        children: [
-                          // Divider label
-                          Text(
-                            'Or continue with',
-                            style: TextStyle(
-                              color: Colors.white.withValues(alpha: 0.45),
-                              fontSize: 12.5,
-                              fontWeight: FontWeight.w400,
-                              letterSpacing: 0.3,
-                            ),
-                          ),
-                          const SizedBox(height: 18),
-
-                          // Social buttons row
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              _SocialButton(
-                                icon: _FacebookIcon(),
-                                onTap: () {},
-                              ),
-                              const SizedBox(width: 20),
-                              _SocialButton(
-                                icon: _GoogleIcon(),
-                                onTap: () {},
-                              ),
-                              const SizedBox(width: 20),
-                              _SocialButton(
-                                icon: const Icon(
-                                  Icons.apple,
-                                  color: Colors.white,
-                                  size: 26,
-                                ),
-                                onTap: () {},
-                              ),
-                            ],
-                          ),
-                        ],
                       ),
                     ),
+                    Expanded(child: Divider(color: Colors.white.withValues(alpha: 0.1), thickness: 1)),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.04),
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.08),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      _SocialButton(
+                        icon: _FacebookIcon(),
+                        label: 'Facebook',
+                        onTap: () {},
+                      ),
+                      _SocialButton(
+                        icon: _GoogleIcon(),
+                        label: 'Google',
+                        onTap: () {},
+                      ),
+                      _SocialButton(
+                        icon: const Icon(Icons.apple, color: Colors.white, size: 24),
+                        label: 'Apple',
+                        onTap: () {},
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -293,77 +231,54 @@ class _LoginScreenState extends State<LoginScreen>
 }
 
 // ── Social Button Widget ─────────────────────────────────────────────────────
-class _SocialButton extends StatefulWidget {
+class _SocialButton extends StatelessWidget {
   final Widget icon;
+  final String label;
   final VoidCallback onTap;
 
-  const _SocialButton({required this.icon, required this.onTap});
-
-  @override
-  State<_SocialButton> createState() => _SocialButtonState();
-}
-
-class _SocialButtonState extends State<_SocialButton>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _ctrl;
-  late Animation<double> _scale;
-
-  @override
-  void initState() {
-    super.initState();
-    _ctrl = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 120),
-    );
-    _scale = Tween<double>(begin: 1.0, end: 0.92).animate(
-      CurvedAnimation(parent: _ctrl, curve: Curves.easeOut),
-    );
-  }
-
-  @override
-  void dispose() {
-    _ctrl.dispose();
-    super.dispose();
-  }
+  const _SocialButton({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTapDown: (_) => _ctrl.forward(),
-      onTapUp: (_) {
-        _ctrl.reverse();
-        widget.onTap();
-      },
-      onTapCancel: () => _ctrl.reverse(),
-      child: ScaleTransition(
-        scale: _scale,
-        child: ClipOval(
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
-            child: Container(
-              width: 56,
-              height: 56,
+      onTap: onTap,
+      child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 60,
+              height: 60,
               decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.06),
                 shape: BoxShape.circle,
-                color: Colors.white.withValues(alpha: 0.07),
                 border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.14),
-                  width: 1,
+                  color: Colors.white.withValues(alpha: 0.1),
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.35),
-                    blurRadius: 12,
-                    spreadRadius: 0,
+                    color: Colors.black.withValues(alpha: 0.2),
+                    blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
                 ],
               ),
-              child: Center(child: widget.icon),
+              child: Center(child: icon),
             ),
-          ),
+            const SizedBox(height: 8),
+            Text(
+              label,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
         ),
-      ),
     );
   }
 }

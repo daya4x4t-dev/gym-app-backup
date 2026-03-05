@@ -38,6 +38,9 @@ dependencies:
   # Google Fonts — for Rajdhani (display) + Inter (body)
   google_fonts: ^6.2.1
 
+  # Persist onboarding completion flag
+  shared_preferences: ^2.3.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

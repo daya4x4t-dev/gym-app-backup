@@ -4,6 +4,7 @@ import '../utils/auth_background.dart';
 import '../utils/app_theme.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_textfield.dart';
+import 'signup_success_screen.dart';
 
 class SignupScreen extends StatelessWidget {
   const SignupScreen({super.key});
@@ -65,7 +66,14 @@ class SignupScreen extends StatelessWidget {
                         textInputAction: TextInputAction.done,
                       ),
                       const SizedBox(height: 28),
-                      CustomButton(text: 'CREATE ACCOUNT', onTap: () {}),
+                      CustomButton(
+                        text: 'CREATE ACCOUNT',
+                        onTap: () => Navigator.push(
+                          context,
+                          AppTheme.fadeSlideRoute(
+                              const SignupSuccessScreen()),
+                        ),
+                      ),
                       const SizedBox(height: 22),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
