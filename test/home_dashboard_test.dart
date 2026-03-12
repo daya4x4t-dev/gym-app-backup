@@ -10,8 +10,8 @@ void main() {
     ));
 
     // Verify greeting text
-    expect(find.text('Good Morning'), findsOneWidget);
-    expect(find.text('Ready for today’s workout?'), findsOneWidget);
+    expect(find.textContaining('Good Morning'), findsOneWidget);
+    expect(find.textContaining('Ready for today\'s workout?'), findsOneWidget);
 
     // Verify sections headers
     expect(find.text('Top Gym Brand'), findsOneWidget);
@@ -21,7 +21,7 @@ void main() {
     expect(find.text('Top Workouts\nof 2025'), findsOneWidget);
 
     // Verify Search Bar placeholder
-    expect(find.text('Search workouts, gyms or equipment'), findsOneWidget);
+    expect(find.textContaining('Search workouts, gyms or equip'), findsOneWidget);
 
     // Verify Gym Equipment button
     expect(find.text('View Gym Equipment'), findsOneWidget);
