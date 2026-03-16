@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:gym/screens/activity_progress_screen.dart';
 
 const _accentRed = Color(0xFFE53935);
 const _bgLight = Color(0xFFF8F9FA);
@@ -48,7 +47,7 @@ class HomeDashboard extends StatelessWidget {
         ),
       ),
       extendBody: true,
-      bottomNavigationBar: _buildBottomNav(context),
+      bottomNavigationBar: _buildBottomNav(),
     );
   }
 
@@ -60,7 +59,7 @@ class HomeDashboard extends StatelessWidget {
           Container(
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: _accentRed.withAlpha(51), width: 2),
+              border: Border.all(color: _accentRed.withOpacity(0.2), width: 2),
             ),
             child: const CircleAvatar(
               radius: 26,
@@ -148,7 +147,7 @@ class HomeDashboard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(26),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withAlpha(10),
+                    color: Colors.black.withOpacity(0.04),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -178,7 +177,7 @@ class HomeDashboard extends StatelessWidget {
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: _accentRed.withAlpha(102),
+                  color: _accentRed.withOpacity(0.4),
                   blurRadius: 12,
                   offset: const Offset(0, 4),
                 ),
@@ -202,7 +201,7 @@ class HomeDashboard extends StatelessWidget {
           color: _textDark,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withAlpha(31),
+              color: Colors.black.withOpacity(0.12),
               blurRadius: 15,
               offset: const Offset(0, 8),
             ),
@@ -273,7 +272,7 @@ class HomeDashboard extends StatelessWidget {
           borderRadius: BorderRadius.circular(32),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withAlpha(8),
+              color: Colors.black.withOpacity(0.03),
               blurRadius: 20,
               offset: const Offset(0, 10),
             ),
@@ -403,14 +402,14 @@ class HomeDashboard extends StatelessWidget {
     );
   }
 
-  Widget _buildBottomNav(BuildContext context) {
+  Widget _buildBottomNav() {
     return Container(
       height: 95,
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withAlpha(15),
+            color: Colors.black.withOpacity(0.06),
             blurRadius: 20,
             offset: const Offset(0, -5),
           ),
@@ -425,21 +424,11 @@ class HomeDashboard extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildNavItem(Icons.home_filled, 'Home', isActive: true, context: context),
-                _buildNavItem(Icons.explore_outlined, 'Explore', context: context),
+                _buildNavItem(Icons.home_filled, 'Home', isActive: true),
+                _buildNavItem(Icons.explore_outlined, 'Explore'),
                 const SizedBox(width: 65), // Space for floating button
-                _buildNavItem(
-                  Icons.analytics_outlined,
-                  'Stats',
-                  context: context,
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const ActivityProgressScreen()),
-                    );
-                  },
-                ),
-                _buildNavItem(Icons.person_outline_rounded, 'Profile', context: context),
+                _buildNavItem(Icons.analytics_outlined, 'Stats'),
+                _buildNavItem(Icons.person_outline_rounded, 'Profile'),
               ],
             ),
           ),
@@ -455,7 +444,7 @@ class HomeDashboard extends StatelessWidget {
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: _accentRed.withAlpha(102),
+                        color: _accentRed.withOpacity(0.4),
                         blurRadius: 15,
                         offset: const Offset(0, 8),
                       ),
@@ -485,29 +474,25 @@ class HomeDashboard extends StatelessWidget {
     );
   }
 
-  Widget _buildNavItem(IconData icon, String label, {bool isActive = false, BuildContext? context, VoidCallback? onTap}) {
-    return GestureDetector(
-      onTap: onTap,
-      behavior: HitTestBehavior.opaque,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            icon,
-            color: isActive ? _accentRed : Colors.grey.shade400,
-            size: 28,
+  Widget _buildNavItem(IconData icon, String label, {bool isActive = false}) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(
+          icon,
+          color: isActive ? _accentRed : Colors.grey.shade400,
+          size: 28,
+        ),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          style: TextStyle(
+            color: isActive ? _accentRed : _textGrey,
+            fontSize: 11,
+            fontWeight: FontWeight.w700,
           ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: TextStyle(
-              color: isActive ? _accentRed : _textGrey,
-              fontSize: 11,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -518,7 +503,7 @@ class HomeDashboard extends StatelessWidget {
         color: Colors.white,
         shape: BoxShape.circle,
         boxShadow: [
-          BoxShadow(color: Colors.black.withAlpha(10), blurRadius: 10),
+          BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 10),
         ],
       ),
       child: Icon(icon, color: _textDark, size: 24),
@@ -586,7 +571,7 @@ class _BrandItem extends StatelessWidget {
               color: Colors.white,
               shape: BoxShape.circle,
               boxShadow: [
-                BoxShadow(color: Colors.black.withAlpha(10), blurRadius: 10),
+                BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 10),
               ],
               border: Border.all(color: Colors.grey.shade50),
             ),
@@ -628,14 +613,14 @@ class _WorkoutRefinedCard extends StatelessWidget {
       height: 220,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(28),
-        color: _textDark.withAlpha(230),
+        color: _textDark.withOpacity(0.9),
       ),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(28),
           gradient: LinearGradient(
-            colors: [Colors.black.withAlpha(217), Colors.transparent],
+            colors: [Colors.black.withOpacity(0.85), Colors.transparent],
             begin: Alignment.bottomCenter,
             end: Alignment.topCenter,
           ),
