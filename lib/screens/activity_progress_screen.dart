@@ -76,6 +76,8 @@ class _ActivityProgressScreenState extends State<ActivityProgressScreen>
                     children: [
                       _buildHeader(),
                       const SizedBox(height: 24),
+                      _buildLocalClashBox(),
+                      const SizedBox(height: 20),
                       _buildTopStats(),
                       const SizedBox(height: 20),
                       _buildChartCard(),
@@ -169,7 +171,97 @@ class _ActivityProgressScreenState extends State<ActivityProgressScreen>
     );
   }
 
-  // ── 2. Top Stats (Calories & Steps) ────────────────────────────────────────
+  // ── 2. Local Clash Box ─────────────────────────────────────────────────────
+  Widget _buildLocalClashBox() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: _textDark,
+        borderRadius: BorderRadius.circular(28),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withAlpha(25),
+            blurRadius: 15,
+            offset: const Offset(0, 8),
+          ),
+        ],
+        gradient: LinearGradient(
+          colors: [
+            _textDark,
+            const Color(0xFF2C2C3E), // Slightly lighter dark tone
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      child: Row(
+        children: [
+          // Icon Box
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: _orangeCalories.withAlpha(40),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: const Icon(
+              Icons.flash_on_rounded,
+              color: _orangeCalories,
+              size: 28,
+            ),
+          ),
+          const SizedBox(width: 16),
+          // Text Content
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                Text(
+                  'Join Local Clash',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                SizedBox(height: 4),
+                Text(
+                  'Compete with 12 nearby users!',
+                  style: TextStyle(
+                    color: Colors.white70,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // CTA Button
+          ElevatedButton(
+            onPressed: () {},
+            style: ElevatedButton.styleFrom(
+              backgroundColor: _orangeCalories,
+              foregroundColor: Colors.white,
+              elevation: 0,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: const Text(
+              'Join',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── 3. Top Stats (Calories & Steps) ────────────────────────────────────────
   Widget _buildTopStats() {
     return Row(
       children: [

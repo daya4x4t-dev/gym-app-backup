@@ -1,0 +1,5 @@
+﻿Analyzing home_dashboard.dart...
+
+  error - home_dashboard.dart:64:17 - Undefined name 'context'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+
+1 issue found.
