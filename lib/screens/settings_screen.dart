@@ -1,12 +1,5 @@
 import 'package:flutter/material.dart';
-
-// ─── Design Tokens (mirrors home_dashboard.dart) ─────────────────────────────
-const _accentRed     = Color(0xFFE53935);
-const _accentRedDark = Color(0xFFC62828);
-const _bgLight       = Color(0xFFF5F6FA);
-const _textDark      = Color(0xFF1C1C2E);
-const _textGrey      = Color(0xFF8A8FA3);
-const _cardWhite     = Colors.white;
+import 'package:gym/utils/app_theme.dart';
 
 // ─── Settings Screen ─────────────────────────────────────────────────────────
 
@@ -40,7 +33,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _bgLight,
+      backgroundColor: AppTheme.bgLight,
       body: CustomScrollView(
         physics: const BouncingScrollPhysics(),
         slivers: [
@@ -50,16 +43,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
             sliver: SliverList(
               delegate: SliverChildListDelegate([
                 _buildProfileCard(),
-                const SizedBox(height: 24),
+                const SizedBox(height: 20),
                 _buildSection(
                   title: 'Workout Preferences',
                   icon: Icons.fitness_center_rounded,
-                  iconColor: _accentRed,
+                  iconColor: AppTheme.accentRed,
                   children: [
                     _buildInfoTile(
                       icon: Icons.timer_outlined,
                       iconBg: const Color(0xFFFFF0F0),
-                      iconColor: _accentRed,
+                      iconColor: AppTheme.accentRed,
                       label: 'Default Duration',
                       value: '45 min',
                       onTap: () => _showPickerSheet(
@@ -119,7 +112,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     _buildInfoTile(
                       icon: Icons.calendar_today_rounded,
                       iconBg: const Color(0xFFFFF0F0),
-                      iconColor: _accentRed,
+                      iconColor: AppTheme.accentRed,
                       label: 'Weekly Workout Target',
                       value: '5 days',
                       onTap: () {},
@@ -149,12 +142,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 _buildSection(
                   title: 'Health & Tracking',
                   icon: Icons.favorite_rounded,
-                  iconColor: _accentRed,
+                  iconColor: AppTheme.accentRed,
                   children: [
                     _buildToggleTile(
                       icon: Icons.favorite_rounded,
                       iconBg: const Color(0xFFFFF0F0),
-                      iconColor: _accentRed,
+                      iconColor: AppTheme.accentRed,
                       label: 'Heart Rate Tracking',
                       subtitle: 'Monitor BPM during workouts',
                       value: _heartRateTracking,
@@ -200,7 +193,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     _buildToggleTile(
                       icon: Icons.alarm_rounded,
                       iconBg: const Color(0xFFFFF0F0),
-                      iconColor: _accentRed,
+                      iconColor: AppTheme.accentRed,
                       label: 'Workout Reminders',
                       subtitle: 'Remind me before scheduled sessions',
                       value: _workoutReminders,
@@ -290,7 +283,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     _buildActionTile(
                       icon: Icons.rocket_launch_rounded,
                       iconBg: const Color(0xFFFFF0F0),
-                      iconColor: _accentRed,
+                      iconColor: AppTheme.accentRed,
                       label: 'Upgrade Plan',
                       subtitle: 'Unlock all premium features',
                       onTap: () {},
@@ -334,11 +327,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     _buildActionTile(
                       icon: Icons.delete_forever_rounded,
                       iconBg: const Color(0xFFFFF0F0),
-                      iconColor: _accentRed,
+                      iconColor: AppTheme.accentRed,
                       label: 'Delete Account',
                       subtitle: 'Permanently remove your data',
                       onTap: () => _showDeleteConfirmation(context),
-                      labelColor: _accentRed,
+                      labelColor: AppTheme.accentRed,
                     ),
                   ],
                 ),
@@ -390,21 +383,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
   // ─── Sliver App Bar ─────────────────────────────────────────────────────────
   Widget _buildSliverAppBar() {
     return SliverAppBar(
-      expandedHeight: 80,
+      expandedHeight: 60,
       floating: true,
       snap: true,
       pinned: false,
-      backgroundColor: _bgLight,
+      backgroundColor: AppTheme.bgLight,
       surfaceTintColor: Colors.transparent,
       elevation: 0,
       leading: Padding(
-        padding: const EdgeInsets.only(left: 12),
+        padding: const EdgeInsets.only(left: 14),
         child: IconButton(
           onPressed: () => Navigator.maybePop(context),
           icon: Container(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(5),
             decoration: BoxDecoration(
-              color: _cardWhite,
+              color: Colors.white,
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
@@ -415,19 +408,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ],
             ),
             child: const Icon(Icons.arrow_back_ios_new_rounded,
-                color: _textDark, size: 18),
+                color: AppTheme.textDarkAlt, size: 18),
           ),
         ),
       ),
       flexibleSpace: FlexibleSpaceBar(
-        titlePadding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+        centerTitle: false,
+        titlePadding: EdgeInsets.only(left: 50, bottom: 10),
         title: const Text(
           'Settings',
           style: TextStyle(
-            color: _textDark,
+            color: AppTheme.textDarkAlt,
             fontSize: 24,
             fontWeight: FontWeight.w800,
-            letterSpacing: -0.5,
+            letterSpacing: 1,
           ),
         ),
       ),
@@ -435,11 +429,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   // ─── Profile Card ────────────────────────────────────────────────────────────
+
   Widget _buildProfileCard() {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: _cardWhite,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
@@ -457,20 +452,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: _accentRed.withValues(alpha: 0.25),
+                  color: AppTheme.accentRed.withValues(alpha: 0.25),
                   blurRadius: 14,
                   offset: const Offset(0, 6),
                 ),
               ],
-              border: Border.all(color: _accentRed, width: 2.5),
+              border: Border.all(color: AppTheme.accentRed, width: 2.5),
             ),
             child: const CircleAvatar(
               radius: 30,
               backgroundColor: Color(0xFFEEEEEE),
-              child: Icon(Icons.person_rounded, color: _textGrey, size: 32),
+              child: Icon(Icons.person_rounded, color: AppTheme.textGreyAlt, size: 32),
             ),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -478,7 +473,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 const Text(
                   'B.Dayanithi',
                   style: TextStyle(
-                    color: _textDark,
+                    color: AppTheme.textDarkAlt,
                     fontSize: 17,
                     fontWeight: FontWeight.w800,
                     letterSpacing: -0.3,
@@ -492,7 +487,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           horizontal: 8, vertical: 3),
                       decoration: BoxDecoration(
                         gradient: const LinearGradient(
-                          colors: [_accentRed, _accentRedDark],
+                          colors: [AppTheme.accentRed, AppTheme.accentRedDark],
                         ),
                         borderRadius: BorderRadius.circular(6),
                       ),
@@ -510,7 +505,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     const Text(
                       'Since Jan 2024',
                       style: TextStyle(
-                        color: _textGrey,
+                        color: AppTheme.textGreyAlt,
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
                       ),
@@ -526,13 +521,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
               decoration: BoxDecoration(
-                color: _accentRed.withValues(alpha: 0.08),
+                color: AppTheme.accentRed.withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: const Text(
                 'Edit',
                 style: TextStyle(
-                  color: _accentRed,
+                  color: AppTheme.accentRed,
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
                 ),
@@ -576,7 +571,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         // Card
         Container(
           decoration: BoxDecoration(
-            color: _cardWhite,
+            color: Colors.white,
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
@@ -615,14 +610,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
               children: [
                 Text(label,
                     style: const TextStyle(
-                      color: _textDark,
+                      color: AppTheme.textDarkAlt,
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
                     )),
                 const SizedBox(height: 2),
                 Text(subtitle,
                     style: const TextStyle(
-                      color: _textGrey,
+                      color: AppTheme.textGreyAlt,
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
                     )),
@@ -634,10 +629,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
             child: Switch.adaptive(
               value: value,
               onChanged: onChanged,
-              activeTrackColor: _accentRed.withValues(alpha: 0.25),
+              activeTrackColor: AppTheme.accentRed.withValues(alpha: 0.25),
               thumbColor: WidgetStateProperty.resolveWith(
                 (states) => states.contains(WidgetState.selected)
-                    ? _accentRed
+                    ? AppTheme.accentRed
                     : null,
               ),
             ),
@@ -667,20 +662,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Expanded(
               child: Text(label,
                   style: const TextStyle(
-                    color: _textDark,
+                    color: AppTheme.textDarkAlt,
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
                   )),
             ),
             Text(value,
                 style: const TextStyle(
-                  color: _textGrey,
+                  color: AppTheme.textGreyAlt,
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
                 )),
             const SizedBox(width: 6),
             const Icon(Icons.chevron_right_rounded,
-                color: _textGrey, size: 20),
+                color: AppTheme.textGreyAlt, size: 20),
           ],
         ),
       ),
@@ -712,14 +707,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 children: [
                   Text(label,
                       style: TextStyle(
-                        color: labelColor ?? _textDark,
+                        color: labelColor ?? AppTheme.textDarkAlt,
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
                       )),
                   const SizedBox(height: 2),
                   Text(subtitle,
                       style: const TextStyle(
-                        color: _textGrey,
+                        color: AppTheme.textGreyAlt,
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
                       )),
@@ -732,7 +727,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                    colors: [_accentRed, _accentRedDark],
+                    colors: [AppTheme.accentRed, AppTheme.accentRedDark],
                   ),
                   borderRadius: BorderRadius.circular(6),
                 ),
@@ -749,7 +744,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               const SizedBox(width: 6),
             ],
             const Icon(Icons.chevron_right_rounded,
-                color: _textGrey, size: 20),
+                color: AppTheme.textGreyAlt, size: 20),
           ],
         ),
       ),
@@ -776,7 +771,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               const SizedBox(width: 14),
               Text(label,
                   style: const TextStyle(
-                    color: _textDark,
+                    color: AppTheme.textDarkAlt,
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
                   )),
@@ -794,12 +789,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   padding: const EdgeInsets.symmetric(
                       horizontal: 16, vertical: 8),
                   decoration: BoxDecoration(
-                    color: isSelected ? _accentRed : const Color(0xFFF5F6FA),
+                    color: isSelected ? AppTheme.accentRed : const Color(0xFFF5F6FA),
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: isSelected
                         ? [
                             BoxShadow(
-                              color: _accentRed.withValues(alpha: 0.35),
+                              color: AppTheme.accentRed.withValues(alpha: 0.35),
                               blurRadius: 8,
                               offset: const Offset(0, 3),
                             ),
@@ -809,7 +804,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   child: Text(
                     opt,
                     style: TextStyle(
-                      color: isSelected ? Colors.white : _textGrey,
+                      color: isSelected ? Colors.white : AppTheme.textGreyAlt,
                       fontSize: 13,
                       fontWeight: FontWeight.w700,
                     ),
@@ -848,11 +843,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: _accentRed.withValues(alpha: 0.2),
+              color: AppTheme.accentRed.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(12),
             ),
             child: const Icon(Icons.workspace_premium_rounded,
-                color: _accentRed, size: 26),
+                color: AppTheme.accentRed, size: 26),
           ),
           const SizedBox(width: 14),
           const Expanded(
@@ -878,11 +873,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
             decoration: BoxDecoration(
-              color: _accentRed,
+              color: AppTheme.accentRed,
               borderRadius: BorderRadius.circular(10),
               boxShadow: [
                 BoxShadow(
-                  color: _accentRed.withValues(alpha: 0.5),
+                  color: AppTheme.accentRed.withValues(alpha: 0.5),
                   blurRadius: 8,
                   offset: const Offset(0, 3),
                 ),
@@ -908,21 +903,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
         width: double.infinity,
         padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
-          color: _accentRed.withValues(alpha: 0.08),
+          color: AppTheme.accentRed.withValues(alpha: 0.08),
           borderRadius: BorderRadius.circular(18),
           border: Border.all(
-            color: _accentRed.withValues(alpha: 0.2),
+            color: AppTheme.accentRed.withValues(alpha: 0.2),
             width: 1.2,
           ),
         ),
         child: const Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.logout_rounded, color: _accentRed, size: 20),
+            Icon(Icons.logout_rounded, color: AppTheme.accentRed, size: 20),
             SizedBox(width: 10),
             Text('Sign Out',
                 style: TextStyle(
-                  color: _accentRed,
+                  color: AppTheme.accentRed,
                   fontSize: 15,
                   fontWeight: FontWeight.w800,
                   letterSpacing: 0.2,
@@ -976,7 +971,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       backgroundColor: Colors.transparent,
       builder: (_) => Container(
         decoration: const BoxDecoration(
-          color: _cardWhite,
+          color: Colors.white,
           borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
         ),
         padding: const EdgeInsets.fromLTRB(24, 12, 24, 32),
@@ -994,7 +989,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             const SizedBox(height: 20),
             Text(title,
                 style: const TextStyle(
-                  color: _textDark,
+                  color: AppTheme.textDarkAlt,
                   fontSize: 17,
                   fontWeight: FontWeight.w800,
                 )),
@@ -1005,7 +1000,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 contentPadding: EdgeInsets.zero,
                 title: Text(opt,
                     style: TextStyle(
-                      color: isSelected ? _accentRed : _textDark,
+                      color: isSelected ? AppTheme.accentRed : AppTheme.textDarkAlt,
                       fontWeight: isSelected
                           ? FontWeight.w800
                           : FontWeight.w600,
@@ -1013,7 +1008,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     )),
                 trailing: isSelected
                     ? const Icon(Icons.check_circle_rounded,
-                        color: _accentRed, size: 22)
+                        color: AppTheme.accentRed, size: 22)
                     : null,
                 onTap: () => Navigator.pop(context),
               );
@@ -1031,22 +1026,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         title: const Text('Delete Account',
             style:
-                TextStyle(color: _textDark, fontWeight: FontWeight.w800)),
+                TextStyle(color: AppTheme.textDarkAlt, fontWeight: FontWeight.w800)),
         content: const Text(
           'This action is permanent and cannot be undone. All your fitness data will be erased.',
-          style: TextStyle(color: _textGrey, fontSize: 14),
+          style: TextStyle(color: AppTheme.textGreyAlt, fontSize: 14),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: const Text('Cancel',
                 style: TextStyle(
-                    color: _textGrey, fontWeight: FontWeight.w700)),
+                    color: AppTheme.textGreyAlt, fontWeight: FontWeight.w700)),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context),
             style: ElevatedButton.styleFrom(
-              backgroundColor: _accentRed,
+              backgroundColor: AppTheme.accentRed,
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12)),

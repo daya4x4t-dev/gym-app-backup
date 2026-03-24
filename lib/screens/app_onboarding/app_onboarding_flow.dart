@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../home_dashboard.dart';
+import '../main_shell.dart';
 
 /// 3-slide full-screen motivational onboarding shown after every login
 /// and after completing the user-details onboarding for new users.
@@ -11,8 +11,6 @@ class AppOnboardingFlow extends StatefulWidget {
 }
 
 class _AppOnboardingFlowState extends State<AppOnboardingFlow> {
-  static const _bgImage = 'assets/images/eb4cefe0c24c3e3010394ae4bfd3c9b8.jpg';
-
   final _pageCtrl = PageController();
   int _page = 0;
 
@@ -55,7 +53,7 @@ class _AppOnboardingFlowState extends State<AppOnboardingFlow> {
 
   void _goHome() {
     Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => const HomeDashboard()),
+      MaterialPageRoute(builder: (_) => const MainShell()),
       (_) => false,
     );
   }

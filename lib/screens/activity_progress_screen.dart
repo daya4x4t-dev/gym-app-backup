@@ -1,15 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
-
-// ─── Color Palette ───────────────────────────────────────────────────────────
-const _bgLight = Color(0xFFF5F6FA);
-const _textDark = Color(0xFF1A1A1A);
-const _textGrey = Color(0xFF9E9E9E);
-const _purplePrimary = Color(0xFF7B61FF);
-const _greenAccent = Color(0xFF4CAF50);
-const _orangeCalories = Color(0xFFFF7043);
-const _blueWater = Color(0xFF42A5F5);
-const _tealCarbs = Color(0xFF26A69A);
+import 'package:gym/utils/app_theme.dart';
+import 'package:gym/widgets/stat_card.dart';
 
 class ActivityProgressScreen extends StatefulWidget {
   const ActivityProgressScreen({super.key});
@@ -58,7 +50,7 @@ class _ActivityProgressScreenState extends State<ActivityProgressScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _bgLight,
+      backgroundColor: AppTheme.bgLight,
       body: SafeArea(
         child: AnimatedBuilder(
           animation: _mainController,
@@ -108,7 +100,7 @@ class _ActivityProgressScreenState extends State<ActivityProgressScreen>
             Text(
               'Activity Progress',
               style: TextStyle(
-                color: _textDark,
+                color: AppTheme.textDark,
                 fontSize: 24,
                 fontWeight: FontWeight.w900,
                 letterSpacing: -0.5,
@@ -118,12 +110,12 @@ class _ActivityProgressScreenState extends State<ActivityProgressScreen>
             Row(
               children: [
                 Icon(Icons.calendar_month_outlined,
-                    color: _textGrey, size: 14),
+                    color: AppTheme.textGreyLight, size: 14),
                 SizedBox(width: 5),
                 Text(
                   'Monday, 12 Jan 2026',
                   style: TextStyle(
-                    color: _textGrey,
+                    color: AppTheme.textGreyLight,
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
                   ),
@@ -150,7 +142,7 @@ class _ActivityProgressScreenState extends State<ActivityProgressScreen>
                 border: Border.all(color: Colors.grey.shade100),
               ),
               child: const Icon(Icons.person_outline_rounded,
-                  color: _textGrey, size: 22),
+                  color: AppTheme.textGreyLight, size: 22),
             ),
             Positioned(
               right: 3,
@@ -177,7 +169,7 @@ class _ActivityProgressScreenState extends State<ActivityProgressScreen>
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: _textDark,
+        color: AppTheme.textDark,
         borderRadius: BorderRadius.circular(28),
         boxShadow: [
           BoxShadow(
@@ -188,7 +180,7 @@ class _ActivityProgressScreenState extends State<ActivityProgressScreen>
         ],
         gradient: LinearGradient(
           colors: [
-            _textDark,
+            AppTheme.textDark,
             const Color(0xFF2C2C3E), // Slightly lighter dark tone
           ],
           begin: Alignment.topLeft,
@@ -201,12 +193,12 @@ class _ActivityProgressScreenState extends State<ActivityProgressScreen>
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: _orangeCalories.withAlpha(40),
+              color: AppTheme.orangeCalories.withAlpha(40),
               borderRadius: BorderRadius.circular(16),
             ),
             child: const Icon(
               Icons.flash_on_rounded,
-              color: _orangeCalories,
+              color: AppTheme.orangeCalories,
               size: 28,
             ),
           ),
@@ -240,7 +232,7 @@ class _ActivityProgressScreenState extends State<ActivityProgressScreen>
           ElevatedButton(
             onPressed: () {},
             style: ElevatedButton.styleFrom(
-              backgroundColor: _orangeCalories,
+              backgroundColor: AppTheme.orangeCalories,
               foregroundColor: Colors.white,
               elevation: 0,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
@@ -266,10 +258,10 @@ class _ActivityProgressScreenState extends State<ActivityProgressScreen>
     return Row(
       children: [
         Expanded(
-          child: _StatCard(
+          child: StatCard(
             icon: Icons.local_fire_department_rounded,
-            iconColor: _orangeCalories,
-            iconBgColor: _orangeCalories.withAlpha(25),
+            iconColor: AppTheme.orangeCalories,
+            iconBgColor: AppTheme.orangeCalories.withAlpha(25),
             title: 'CALORIES',
             value: '1,240',
             unit: 'kcal',
@@ -279,10 +271,10 @@ class _ActivityProgressScreenState extends State<ActivityProgressScreen>
         ),
         const SizedBox(width: 14),
         Expanded(
-          child: _StatCard(
+          child: StatCard(
             icon: Icons.directions_walk_rounded,
-            iconColor: _greenAccent,
-            iconBgColor: _greenAccent.withAlpha(25),
+            iconColor: AppTheme.greenAccent,
+            iconBgColor: AppTheme.greenAccent.withAlpha(25),
             title: 'STEPS',
             value: '8,432',
             unit: 'steps',
@@ -308,7 +300,7 @@ class _ActivityProgressScreenState extends State<ActivityProgressScreen>
               const Text(
                 'Calories Burnt',
                 style: TextStyle(
-                  color: _textDark,
+                  color: AppTheme.textDark,
                   fontSize: 16,
                   fontWeight: FontWeight.w800,
                 ),
@@ -317,13 +309,13 @@ class _ActivityProgressScreenState extends State<ActivityProgressScreen>
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
-                  color: _greenAccent.withAlpha(25),
+                  color: AppTheme.greenAccent.withAlpha(25),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: const Text(
                   '+12% vs last week',
                   style: TextStyle(
-                    color: _greenAccent,
+                    color: AppTheme.greenAccent,
                     fontSize: 11,
                     fontWeight: FontWeight.w700,
                   ),
@@ -372,7 +364,7 @@ class _ActivityProgressScreenState extends State<ActivityProgressScreen>
                 const Text(
                   'Nutrition',
                   style: TextStyle(
-                    color: _textDark,
+                    color: AppTheme.textDark,
                     fontSize: 15,
                     fontWeight: FontWeight.w800,
                   ),
@@ -392,16 +384,16 @@ class _ActivityProgressScreenState extends State<ActivityProgressScreen>
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: const [
-                    _LegendDot(color: _purplePrimary, label: 'Protein'),
+                    _LegendDot(color: AppTheme.purplePrimary, label: 'Protein'),
                     SizedBox(width: 12),
-                    _LegendDot(color: _tealCarbs, label: 'Carbs'),
+                    _LegendDot(color: AppTheme.tealCarbs, label: 'Carbs'),
                   ],
                 ),
                 const SizedBox(height: 6),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: const [
-                    _LegendDot(color: _orangeCalories, label: 'Fats'),
+                    _LegendDot(color: AppTheme.orangeCalories, label: 'Fats'),
                   ],
                 ),
               ],
@@ -424,7 +416,7 @@ class _ActivityProgressScreenState extends State<ActivityProgressScreen>
                   child: Text(
                     'Water Intake',
                     style: TextStyle(
-                      color: _textDark,
+                      color: AppTheme.textDark,
                       fontSize: 15,
                       fontWeight: FontWeight.w800,
                     ),
@@ -436,7 +428,7 @@ class _ActivityProgressScreenState extends State<ActivityProgressScreen>
                     TextSpan(
                       text: '1.8 ',
                       style: TextStyle(
-                        color: _textDark,
+                        color: AppTheme.textDark,
                         fontSize: 24,
                         fontWeight: FontWeight.w900,
                       ),
@@ -444,7 +436,7 @@ class _ActivityProgressScreenState extends State<ActivityProgressScreen>
                     TextSpan(
                       text: '/ 2.5 L',
                       style: TextStyle(
-                        color: _textGrey,
+                        color: AppTheme.textGreyLight,
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                       ),
@@ -475,8 +467,8 @@ class _ActivityProgressScreenState extends State<ActivityProgressScreen>
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(
                                   colors: [
-                                    _blueWater.withAlpha(153),
-                                    _blueWater,
+                                    AppTheme.blueWater.withAlpha(153),
+                                    AppTheme.blueWater,
                                   ],
                                   begin: Alignment.topCenter,
                                   end: Alignment.bottomCenter,
@@ -523,14 +515,14 @@ class _ActivityProgressScreenState extends State<ActivityProgressScreen>
                     padding:
                         const EdgeInsets.symmetric(vertical: 9),
                     decoration: BoxDecoration(
-                      color: _blueWater.withAlpha(25),
+                      color: AppTheme.blueWater.withAlpha(25),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     alignment: Alignment.center,
                     child: const Text(
                       'ADD 250ML',
                       style: TextStyle(
-                        color: _blueWater,
+                        color: AppTheme.blueWater,
                         fontSize: 11,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 0.5,
@@ -557,7 +549,7 @@ class _ActivityProgressScreenState extends State<ActivityProgressScreen>
             Text(
               'Daily Goal',
               style: TextStyle(
-                color: _textDark,
+                color: AppTheme.textDark,
                 fontSize: 18,
                 fontWeight: FontWeight.w900,
               ),
@@ -565,7 +557,7 @@ class _ActivityProgressScreenState extends State<ActivityProgressScreen>
             Text(
               'View Detail',
               style: TextStyle(
-                color: _purplePrimary,
+                color: AppTheme.purplePrimary,
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
               ),
@@ -582,7 +574,7 @@ class _ActivityProgressScreenState extends State<ActivityProgressScreen>
                 icon: Icons.timer_outlined,
                 label: 'Workout',
                 pct: 80,
-                color: _purplePrimary,
+                color: AppTheme.purplePrimary,
                 progress: _mainController,
               ),
               const SizedBox(height: 22),
@@ -590,7 +582,7 @@ class _ActivityProgressScreenState extends State<ActivityProgressScreen>
                 icon: Icons.water_drop_outlined,
                 label: 'Water Intake',
                 pct: 72,
-                color: _blueWater,
+                color: AppTheme.blueWater,
                 progress: _mainController,
               ),
               const SizedBox(height: 22),
@@ -628,117 +620,6 @@ class _ActivityProgressScreenState extends State<ActivityProgressScreen>
 //  REUSABLE WIDGETS
 // ═══════════════════════════════════════════════════════════════════════════════
 
-// ── Stat Card (Calories / Steps) ─────────────────────────────────────────────
-class _StatCard extends StatelessWidget {
-  final IconData icon;
-  final Color iconColor;
-  final Color iconBgColor;
-  final String title;
-  final String value;
-  final String unit;
-  final String trend;
-  final bool isPositive;
-
-  const _StatCard({
-    required this.icon,
-    required this.iconColor,
-    required this.iconBgColor,
-    required this.title,
-    required this.value,
-    required this.unit,
-    required this.trend,
-    required this.isPositive,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withAlpha(10),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: iconBgColor,
-              shape: BoxShape.circle,
-            ),
-            child: Icon(icon, color: iconColor, size: 22),
-          ),
-          const SizedBox(height: 18),
-          Text(
-            title,
-            style: const TextStyle(
-              color: _textGrey,
-              fontSize: 10,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 1.2,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                value,
-                style: const TextStyle(
-                  color: _textDark,
-                  fontSize: 22,
-                  fontWeight: FontWeight.w900,
-                ),
-              ),
-              const SizedBox(width: 4),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 4),
-                child: Text(
-                  unit,
-                  style: const TextStyle(
-                    color: _textGrey,
-                    fontSize: 10,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Row(
-            children: [
-              Icon(
-                isPositive
-                    ? Icons.arrow_outward_rounded
-                    : Icons.south_east_rounded,
-                color: isPositive ? _greenAccent : Colors.red,
-                size: 14,
-              ),
-              const SizedBox(width: 4),
-              Text(
-                trend,
-                style: TextStyle(
-                  color: isPositive ? _greenAccent : Colors.red,
-                  fontSize: 11,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 // ── Daily Goal Progress Bar ──────────────────────────────────────────────────
 class _GoalBar extends StatelessWidget {
   final IconData icon;
@@ -773,7 +654,7 @@ class _GoalBar extends StatelessWidget {
             Text(
               label,
               style: const TextStyle(
-                color: _textDark,
+                color: AppTheme.textDark,
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
               ),
@@ -782,7 +663,7 @@ class _GoalBar extends StatelessWidget {
             Text(
               '$pct%',
               style: const TextStyle(
-                color: _textGrey,
+                color: AppTheme.textGrey,
                 fontSize: 12,
                 fontWeight: FontWeight.w700,
               ),
@@ -837,7 +718,7 @@ class _ChartLabel extends StatelessWidget {
     return Text(
       text,
       style: const TextStyle(
-        color: _textGrey,
+        color: AppTheme.textGrey,
         fontSize: 11,
         fontWeight: FontWeight.w600,
       ),
@@ -865,7 +746,7 @@ class _LegendDot extends StatelessWidget {
         Text(
           label,
           style: const TextStyle(
-            color: _textGrey,
+            color: AppTheme.textGrey,
             fontSize: 10,
             fontWeight: FontWeight.w600,
           ),
@@ -968,11 +849,11 @@ class _DonutChartPainter extends CustomPainter {
 
     // Carbs (teal)      – 35 %
     _arc(canvas, center, radius, stroke, math.pi * 0.48 + gap,
-        math.pi * 0.70 * progress, _tealCarbs);
+        math.pi * 0.70 * progress, AppTheme.tealCarbs);
 
     // Fats (orange)     – 17 %
     _arc(canvas, center, radius, stroke, math.pi * 1.20 + gap,
-        math.pi * 0.30 * progress, _orangeCalories);
+        math.pi * 0.30 * progress, AppTheme.orangeCalories);
   }
 
   void _arc(Canvas canvas, Offset center, double r, double sw,

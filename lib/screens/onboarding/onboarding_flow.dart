@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../utils/onboarding_service.dart';
 import '../app_onboarding/app_onboarding_flow.dart';
+import '../../utils/app_theme.dart';
 import 'gender_step.dart';
 import 'age_step.dart';
 import 'height_step.dart';
@@ -48,7 +49,7 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
     await OnboardingService.markOnboardingDone();
     if (!mounted) return;
     Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => const AppOnboardingFlow()),
+      AppTheme.fadeSlideRoute(const AppOnboardingFlow()),
       (_) => false,
     );
   }
@@ -74,7 +75,7 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
                     height: 8,
                     decoration: BoxDecoration(
                       color: active
-                          ? const Color(0xFFE53935)
+                          ? AppTheme.accentRed
                           : Colors.grey.shade300,
                       borderRadius: BorderRadius.circular(4),
                     ),

@@ -1,0 +1,7 @@
+﻿Analyzing gym...                                                
+
+  error - Invalid constant value - lib\screens\activity_progress_screen.dart:721:16 - invalid_constant
+  error - Undefined name '_textGrey' - lib\screens\activity_progress_screen.dart:721:16 - undefined_identifier
+  error - Invalid constant value - lib\screens\activity_progress_screen.dart:749:20 - invalid_constant
+  error - Undefined name '_textGrey' - lib\screens\activity_progress_screen.dart:749:20 - undefined_identifier
+
