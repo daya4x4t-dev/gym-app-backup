@@ -12,6 +12,7 @@ import workoutRoutes from "./routes/workouts.js";
 import progressRoutes from "./routes/progress.js";
 import statsRoutes from "./routes/stats.js";
 import exerciseRoutes from "./routes/exercises.js";
+import userRoutes from "./routes/user.js";
 
 dotenv.config();
 
@@ -80,6 +81,7 @@ app.use("/api/workouts", workoutRoutes);
 app.use("/api/progress", progressRoutes);
 app.use("/api/stats", statsRoutes);
 app.use("/api/exercises", exerciseRoutes);
+app.use("/api/user", userRoutes);
 
 // =======================
 // 404 HANDLER

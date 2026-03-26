@@ -6,6 +6,7 @@ import '../utils/auth_background.dart';
 import '../utils/app_theme.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_textfield.dart';
+import 'reset_password_screen.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -51,7 +52,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         ),
       );
 
-      Navigator.pop(context); // back to login
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const ResetPasswordScreen()),
+      );
     } catch (e) {
       if (!mounted) return;
 

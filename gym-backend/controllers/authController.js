@@ -1,22 +1,17 @@
+import crypto from "node:crypto";
 import { supabase } from "../config/supabaseClient.js";
 import { sendError, sendSuccess } from "../utils/response.js";
 
 const safeAuthMessage = "Authentication request failed";
 
-/**
- * 🔐 SIGNUP
- */
 export const signup = async (req, res) => {
   try {
     const { email, password, name } = req.body;
-
-    console.log("BODY:", req.body);
 
     if (!email || !password || !name) {
       return sendError(res, 400, "Email, password and name are required");
     }
 
-    // ✅ Create user in Supabase Auth
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -25,38 +20,25 @@ export const signup = async (req, res) => {
       },
     });
 
-    if (error) {
-      console.log("SUPABASE ERROR:", error);
-      return sendError(res, 400, error.message);
-    }
+    if (error) return sendError(res, 400, error.message);
 
     const user = data.user;
 
-    // ✅ Insert into profiles table
-    const { error: profileError } = await supabase
-      .from("profiles")
-      .insert([
-        {
-          id: user.id,
-          full_name: name,
-        },
-      ]);
-
-    if (profileError) {
-      console.log("PROFILE INSERT ERROR:", profileError);
-      // Not blocking signup — just logging
-    }
+    await supabase.from("profiles").upsert(
+      {
+        id: user.id,
+        name,
+        email,
+      },
+      { onConflict: "id" }
+    );
 
     return sendSuccess(res, 201, "Signup successful", data);
-  } catch (err) {
-    console.log("SERVER ERROR:", err);
+  } catch {
     return sendError(res, 500, "Internal server error");
   }
 };
 
-/**
- * 🔐 LOGIN
- */
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -76,50 +58,58 @@ export const login = async (req, res) => {
 
     return sendSuccess(res, 200, "Login successful", {
       token: data.session.access_token,
+      refreshToken: data.session.refresh_token,
       user: data.user,
     });
-  } catch (err) {
-    console.log("LOGIN ERROR:", err);
+  } catch {
     return sendError(res, 500, "Internal server error");
   }
 };
 
-/**
- * 📧 FORGOT PASSWORD
- */
 export const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
 
-    if (!email) {
-      return sendError(res, 400, "Email is required");
+    if (!email) return sendError(res, 400, "Email is required");
+
+    const { data: authData, error: userError } = await supabase.auth.admin.listUsers();
+    if (userError) return sendError(res, 500, "Unable to process reset request");
+
+    const matchedUser = authData.users.find(
+      (user) => String(user.email || "").toLowerCase() === String(email).toLowerCase()
+    );
+
+    if (!matchedUser) {
+      return sendSuccess(res, 200, "If this email exists, a reset link will be sent");
     }
 
-    const redirectTo = process.env.PASSWORD_RESET_URL;
+    const token = crypto.randomBytes(32).toString("hex");
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+    const expiry = new Date(Date.now() + 1000 * 60 * 30).toISOString();
 
-    if (!redirectTo) {
-      return sendError(res, 500, "Reset URL not configured");
-    }
+    const { error: profileError } = await supabase
+      .from("profiles")
+      .upsert(
+        {
+          id: matchedUser.id,
+          email,
+          reset_password_token: hashedToken,
+          reset_password_expiry: expiry,
+        },
+        { onConflict: "id" }
+      );
 
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo,
+    if (profileError) return sendError(res, 500, "Unable to save reset token");
+
+    return sendSuccess(res, 200, "Password reset token generated", {
+      resetToken: token,
+      expiresAt: expiry,
     });
-
-    if (error) {
-      console.log("FORGOT PASSWORD ERROR:", error);
-      return sendError(res, 400, safeAuthMessage);
-    }
-
-    return sendSuccess(res, 200, "Password reset email sent");
-  } catch (err) {
-    console.log("FORGOT ERROR:", err);
+  } catch {
     return sendError(res, 500, "Internal server error");
   }
 };
 
-/**
- * 🔢 VERIFY OTP
- */
 export const verifyOtp = async (req, res) => {
   try {
     const { email, token } = req.body;
@@ -134,52 +124,68 @@ export const verifyOtp = async (req, res) => {
       type: "email",
     });
 
-    if (error) {
-      console.log("OTP ERROR:", error);
-      return sendError(res, 400, safeAuthMessage);
-    }
+    if (error) return sendError(res, 400, safeAuthMessage);
 
     return sendSuccess(res, 200, "OTP verified", data);
-  } catch (err) {
-    console.log("VERIFY ERROR:", err);
+  } catch {
     return sendError(res, 500, "Internal server error");
   }
 };
 
-/**
- * 🔒 RESET PASSWORD
- */
 export const resetPassword = async (req, res) => {
   try {
-    const { password, accessToken } = req.body;
+    const { token, password, confirmPassword } = req.body;
 
-    if (!password || !accessToken) {
-      return sendError(res, 400, "Password and token required");
+    if (!token || !password || !confirmPassword) {
+      return sendError(res, 400, "token, password, and confirmPassword are required");
     }
 
-    // Set session
-    const { error: sessionError } = await supabase.auth.setSession({
-      access_token: accessToken,
-      refresh_token: accessToken,
-    });
-
-    if (sessionError) {
-      return sendError(res, 401, "Invalid token");
+    if (String(password).length < 6) {
+      return sendError(res, 400, "Password must be at least 6 characters");
     }
 
-    // Update password
-    const { error } = await supabase.auth.updateUser({
+    if (password !== confirmPassword) {
+      return sendError(res, 400, "Passwords do not match");
+    }
+
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .select("id, reset_password_expiry")
+      .eq("reset_password_token", hashedToken)
+      .maybeSingle();
+
+    if (profileError || !profile) return sendError(res, 400, "Invalid reset token");
+
+    if (new Date(profile.reset_password_expiry).getTime() < Date.now()) {
+      return sendError(res, 400, "Reset token expired");
+    }
+
+    const hashedPassword = crypto.scryptSync(password, "gym-app-salt", 64).toString("hex");
+
+    const { error: authError } = await supabase.auth.admin.updateUserById(profile.id, {
       password,
+      user_metadata: {
+        passwordLastResetAt: new Date().toISOString(),
+      },
     });
 
-    if (error) {
-      console.log("RESET ERROR:", error);
-      return sendError(res, 400, safeAuthMessage);
-    }
+    if (authError) return sendError(res, 400, safeAuthMessage);
+
+    const { error: updateError } = await supabase
+      .from("profiles")
+      .update({
+        password_hash: hashedPassword,
+        reset_password_token: null,
+        reset_password_expiry: null,
+      })
+      .eq("id", profile.id);
+
+    if (updateError) return sendError(res, 400, "Password updated but cleanup failed");
 
     return sendSuccess(res, 200, "Password updated successfully");
-  } catch (err) {
-    console.log("RESET SERVER ERROR:", err);
+  } catch {
     return sendError(res, 500, "Internal server error");
   }
 };
