@@ -5,6 +5,7 @@ import helmet from "helmet";
 import morgan from "morgan";
 import rateLimit from "express-rate-limit";
 
+// Routes
 import profileRoutes from "./routes/profileRoutes.js";
 import authRoutes from "./routes/auth.js";
 import workoutRoutes from "./routes/workouts.js";
@@ -15,104 +16,98 @@ import exerciseRoutes from "./routes/exercises.js";
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
-const NODE_ENV = process.env.NODE_ENV || "development";
+const PORT = process.env.PORT || 8000;
 
+// =======================
+// SECURITY
+// =======================
 app.use(helmet());
 
-const allowedOrigins = (process.env.ALLOWED_ORIGINS || "")
-  .split(",")
-  .map((o) => o.trim())
-  .filter(Boolean);
-const allowedOrigins = (process.env.ALLOWED_ORIGINS || "").split(",").map((o) => o.trim()).filter(Boolean);
+// =======================
+// CORS (FIXED FOR MOBILE)
+// =======================
+app.use(cors()); // ✅ allow all origins (fixes mobile issue)
 
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      if (!origin) return callback(null, true);
-      if (!allowedOrigins.length || allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-      if (!allowedOrigins.length || allowedOrigins.includes(origin)) return callback(null, true);
-      return callback(new Error("CORS blocked"));
-    },
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-  })
-);
-
+// =======================
+// RATE LIMIT
+// =======================
 app.use(
   rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 100,
-    standardHeaders: true,
-    legacyHeaders: false,
-    message: { success: false, message: "Too many requests", data: {} },
   })
 );
 
-app.use(express.json({ limit: "10mb" }));
-app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+// =======================
+// BODY PARSER
+// =======================
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// request logging middleware
-app.use(morgan(NODE_ENV === "development" ? "dev" : "combined"));
+// =======================
+// LOGGER
+// =======================
+app.use(morgan("dev"));
 
-app.get("/health", (_req, res) => {
-  res.status(200).json({
+// =======================
+// DEBUG LOGS
+// =======================
+app.use((req, res, next) => {
+  console.log(`📩 ${req.method} ${req.originalUrl}`);
+  next();
+});
+
+// =======================
+// HEALTH CHECK (IMPORTANT)
+// =======================
+app.get("/", (req, res) => {
+  res.send("🚀 API is running");
+});
+
+app.get("/health", (req, res) => {
+  res.json({
     success: true,
-    message: "ok",
-    data: { environment: NODE_ENV },
+    message: "Server is healthy",
   });
 });
 
-app.use("/auth", authRoutes);
-app.use("/profile", profileRoutes);
-app.use("/api/profile", profileRoutes); // backward-compatible alias
-app.use(morgan(NODE_ENV === "development" ? "dev" : "combined"));
-
-app.get("/health", (_req, res) => {
-  res.status(200).json({ success: true, message: "ok", data: { environment: NODE_ENV } });
-});
-
-app.use("/auth", authRoutes);
+// =======================
+// ROUTES
+// =======================
+app.use("/api/auth", authRoutes);
 app.use("/api/profile", profileRoutes);
-app.use("/workouts", workoutRoutes);
-app.use("/progress", progressRoutes);
+app.use("/api/workouts", workoutRoutes);
+app.use("/api/progress", progressRoutes);
 app.use("/api/stats", statsRoutes);
-app.use("/exercises", exerciseRoutes);
+app.use("/api/exercises", exerciseRoutes);
 
+// =======================
+// 404 HANDLER
+// =======================
 app.use((req, res) => {
   res.status(404).json({
     success: false,
     message: `Route not found: ${req.method} ${req.originalUrl}`,
-    data: {},
   });
-  res.status(404).json({ success: false, message: `Route not found: ${req.method} ${req.originalUrl}`, data: {} });
 });
 
-app.use((err, _req, res, _next) => {
-  if (err.message === "CORS blocked") {
-    return res
-      .status(403)
-      .json({ success: false, message: "Origin not allowed", data: {} });
-  }
+// =======================
+// ERROR HANDLER
+// =======================
+app.use((err, req, res, next) => {
+  console.error("🔥 ERROR:", err.message);
 
-  if (NODE_ENV === "development") {
-    console.error("Server error:", err);
-  }
-
-  return res
-    .status(500)
-    .json({ success: false, message: "Internal server error", data: {} });
-    return res.status(403).json({ success: false, message: "Origin not allowed", data: {} });
-  }
-  if (NODE_ENV === "development") console.error(err);
-  return res.status(500).json({ success: false, message: "Internal server error", data: {} });
+  res.status(500).json({
+    success: false,
+    message: err.message || "Internal server error",
+  });
 });
 
+// =======================
+// START SERVER
+// =======================
 app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`🚀 Server running at:`);
+  console.log(`👉 Local:   http://localhost:${PORT}`);
+  console.log(`👉 Network: http://192.168.1.9:${PORT}`);
 });
-
-export default app;

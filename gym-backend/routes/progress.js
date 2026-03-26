@@ -1,25 +1,27 @@
 import express from "express";
 import authMiddleware from "../middleware/authMiddleware.js";
 import {
-  addProgress,
-  getProgress,
-  getProgressSummary,
-import {
-  deleteProgress,
-  getLatestProgress,
-  getProgress,
   logProgress,
+  getProgress,
+  getLatestProgress,
+  deleteProgress,
 } from "../controllers/progressController.js";
 
 const router = express.Router();
 
+// 🔐 Protect all routes
 router.use(authMiddleware);
-router.post("/", addProgress);
-router.get("/", getProgress);
-router.get("/summary", getProgressSummary);
+
+// ➕ Add progress (weight log)
 router.post("/", logProgress);
-router.get("/:userId/latest", getLatestProgress);
-router.get("/:userId", getProgress);
-router.delete("/:progressId", deleteProgress);
+
+// 📥 Get all progress
+router.get("/", getProgress);
+
+// 📊 Get latest progress
+router.get("/latest", getLatestProgress);
+
+// ❌ Delete progress
+router.delete("/:id", deleteProgress);
 
 export default router;

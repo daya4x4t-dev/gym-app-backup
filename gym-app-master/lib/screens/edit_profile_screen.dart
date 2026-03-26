@@ -45,7 +45,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             return null;
           }),
           DropdownButtonFormField<String>(
-            value: goal,
+            initialValue: goal,
             items: const ['Weight Loss', 'Muscle Gain', 'Endurance', 'Flexibility', 'General Fitness']
                 .map((e) => DropdownMenuItem(value: e, child: Text(e)))
                 .toList(),

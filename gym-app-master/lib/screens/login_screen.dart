@@ -29,19 +29,39 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
+  // =========================
+  // 🔐 LOGIN FUNCTION
+  // =========================
   Future<void> _login() async {
-    if (emailController.text.trim().isEmpty || passwordController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Email and password are required')));
+    final email = emailController.text.trim();
+    final password = passwordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Email and password are required')),
+      );
       return;
     }
 
     try {
-      await context.read<AuthProvider>().login(emailController.text.trim(), passwordController.text.trim());
+      await context.read<AuthProvider>().login(email, password);
+
       if (!mounted) return;
-      Navigator.pushReplacement(context, AppTheme.fadeSlideRoute(const HomeScreen()));
-    } catch (_) {
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Login successful")),
+      );
+
+      Navigator.pushReplacement(
+        context,
+        AppTheme.fadeSlideRoute(const HomeScreen()),
+      );
+    } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Login failed. Please try again.')));
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString())),
+      );
     }
   }
 
@@ -62,26 +82,84 @@ class _LoginScreenState extends State<LoginScreen> {
                   decoration: AppTheme.glassCard(),
                   padding: const EdgeInsets.all(24),
                   child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Text('Welcome Back', style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w800)),
+                      const Text(
+                        'Welcome Back',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 28,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+
                       const SizedBox(height: 24),
-                      CustomTextField(hint: 'Email', controller: emailController),
+
+                      // 📧 Email
+                      CustomTextField(
+                        hint: 'Email',
+                        controller: emailController,
+                      ),
+
                       const SizedBox(height: 14),
-                      CustomTextField(hint: 'Password', controller: passwordController, isPassword: true, onSubmitted: (_) => _login()),
+
+                      // 🔑 Password
+                      CustomTextField(
+                        hint: 'Password',
+                        controller: passwordController,
+                        isPassword: true,
+                        onSubmitted: (_) => _login(),
+                      ),
+
                       const SizedBox(height: 8),
+
+                      // 🔁 Forgot Password
                       Align(
                         alignment: Alignment.centerRight,
                         child: TextButton(
-                          onPressed: () => Navigator.push(context, AppTheme.fadeSlideRoute(const ForgotPasswordScreen())),
-                          child: const Text('Forgot Password?', style: TextStyle(color: Color(0xFFFF2E2E))),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              AppTheme.fadeSlideRoute(
+                                const ForgotPasswordScreen(),
+                              ),
+                            );
+                          },
+                          child: const Text(
+                            'Forgot Password?',
+                            style: TextStyle(color: Color(0xFFFF2E2E)),
+                          ),
                         ),
                       ),
+
                       const SizedBox(height: 8),
-                      auth.isLoading ? const CircularProgressIndicator(color: Color(0xFFFF2E2E)) : CustomButton(text: 'Login', onTap: _login),
+
+                      // 🔄 Loading OR Button
+                      auth.isLoading
+                          ? const CircularProgressIndicator(
+                              color: Color(0xFFFF2E2E),
+                            )
+                          : CustomButton(
+                              text: 'Login',
+                              onTap: _login,
+                            ),
+
                       const SizedBox(height: 12),
+
+                      // 🆕 Signup
                       TextButton(
-                        onPressed: () => Navigator.push(context, AppTheme.fadeSlideRoute(const SignupScreen())),
-                        child: const Text('Create account', style: TextStyle(color: Colors.white70)),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            AppTheme.fadeSlideRoute(
+                              const SignupScreen(),
+                            ),
+                          );
+                        },
+                        child: const Text(
+                          'Create account',
+                          style: TextStyle(color: Colors.white70),
+                        ),
                       ),
                     ],
                   ),

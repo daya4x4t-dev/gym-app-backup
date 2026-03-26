@@ -28,16 +28,47 @@ class _SignupScreenState extends State<SignupScreen> {
     super.dispose();
   }
 
+  // =========================
+  // 🔐 SIGNUP FUNCTION
+  // =========================
   Future<void> _signup() async {
-    final provider = context.read<AuthProvider>();
+    final name = nameController.text.trim();
+    final email = emailController.text.trim();
+    final password = passwordController.text.trim();
+
+    // ✅ Validation
+    if (name.isEmpty || email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("All fields are required")),
+      );
+      return;
+    }
+
+    if (password.length < 6) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Password must be at least 6 characters")),
+      );
+      return;
+    }
+
     try {
-      await provider.signup(nameController.text.trim(), emailController.text.trim(), passwordController.text.trim());
+      await context.read<AuthProvider>().signup(name, email, password);
+
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Account created. Verify email and login.')));
-      Navigator.pop(context);
-    } catch (_) {
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Account created! Check your email to verify."),
+        ),
+      );
+
+      Navigator.pop(context); // back to login
+    } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Signup failed. Please try again.')));
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString())),
+      );
     }
   }
 
@@ -58,16 +89,64 @@ class _SignupScreenState extends State<SignupScreen> {
                   decoration: AppTheme.glassCard(),
                   padding: const EdgeInsets.all(24),
                   child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Text('Create Account', style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w800)),
+                      const Text(
+                        'Create Account',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 28,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+
                       const SizedBox(height: 24),
-                      CustomTextField(hint: 'Username', controller: nameController),
+
+                      // 👤 Username
+                      CustomTextField(
+                        hint: 'Username',
+                        controller: nameController,
+                      ),
+
                       const SizedBox(height: 14),
-                      CustomTextField(hint: 'Email', controller: emailController),
+
+                      // 📧 Email
+                      CustomTextField(
+                        hint: 'Email',
+                        controller: emailController,
+                      ),
+
                       const SizedBox(height: 14),
-                      CustomTextField(hint: 'Password', controller: passwordController, isPassword: true),
+
+                      // 🔑 Password
+                      CustomTextField(
+                        hint: 'Password',
+                        controller: passwordController,
+                        isPassword: true,
+                      ),
+
                       const SizedBox(height: 20),
-                      auth.isLoading ? const CircularProgressIndicator(color: Color(0xFFFF2E2E)) : CustomButton(text: 'Sign Up', onTap: _signup),
+
+                      // 🔄 Loading / Button
+                      auth.isLoading
+                          ? const CircularProgressIndicator(
+                              color: Color(0xFFFF2E2E),
+                            )
+                          : CustomButton(
+                              text: 'Sign Up',
+                              onTap: _signup,
+                            ),
+
+                      const SizedBox(height: 12),
+
+                      // 🔙 Back to login
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text(
+                          "Already have an account? Login",
+                          style: TextStyle(color: Colors.white70),
+                        ),
+                      ),
                     ],
                   ),
                 ),

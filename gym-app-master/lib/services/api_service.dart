@@ -1,46 +1,82 @@
-import 'dart:convert';
-import 'package:flutter/foundation.dart';
-import 'package:http/http.dart' as http;
-import 'auth_service.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-class ApiService {
-  ApiService._();
-  static final ApiService instance = ApiService._();
+class AuthService {
+  final SupabaseClient supabase = Supabase.instance.client;
 
-  static String get baseUrl =>
-      kIsWeb ? 'http://localhost:5000' : 'http://10.0.2.2:5000';
+  // =========================
+  // 🔐 SIGNUP
+  // =========================
+  Future<void> signup(String username, String email, String password) async {
+    try {
+      final response = await supabase.auth.signUp(
+        email: email,
+        password: password,
+        data: {
+          'name': username,
+        },
+      );
 
-  Future<Map<String, String>> _headers() async {
-    final token = await AuthService.getToken();
-    return {
-      'Content-Type': 'application/json',
-      if (token != null && token.isNotEmpty) 'Authorization': 'Bearer $token',
-    };
+      if (response.user == null) {
+        throw Exception("Signup failed");
+      }
+    } on AuthException catch (e) {
+      throw Exception(e.message);
+    } catch (e) {
+      throw Exception("Something went wrong");
+    }
   }
 
-  Future<dynamic> get(String path) async =>
-      _handle(await http.get(Uri.parse('$baseUrl$path'), headers: await _headers()).timeout(const Duration(seconds: 15)));
+  // =========================
+  // 🔐 LOGIN
+  // =========================
+  Future<void> login(String email, String password) async {
+    try {
+      final response = await supabase.auth.signInWithPassword(
+        email: email,
+        password: password,
+      );
 
-  Future<dynamic> post(String path, {Map<String, dynamic>? body}) async => _handle(
-      await http
-          .post(Uri.parse('$baseUrl$path'), headers: await _headers(), body: jsonEncode(body ?? {}))
-          .timeout(const Duration(seconds: 15)));
-
-  Future<dynamic> put(String path, {Map<String, dynamic>? body}) async => _handle(
-      await http
-          .put(Uri.parse('$baseUrl$path'), headers: await _headers(), body: jsonEncode(body ?? {}))
-          .timeout(const Duration(seconds: 15)));
-
-  Future<dynamic> delete(String path, {Map<String, dynamic>? body}) async => _handle(
-      await http
-          .delete(Uri.parse('$baseUrl$path'), headers: await _headers(), body: jsonEncode(body ?? {}))
-          .timeout(const Duration(seconds: 15)));
-
-  dynamic _handle(http.Response response) {
-    final decoded = response.body.isNotEmpty ? jsonDecode(response.body) : {};
-    if (response.statusCode >= 200 && response.statusCode < 300) {
-      return decoded;
+      if (response.user == null) {
+        throw Exception("Login failed");
+      }
+    } on AuthException catch (e) {
+      throw Exception(e.message);
+    } catch (e) {
+      throw Exception("Something went wrong");
     }
-    throw Exception(decoded['message'] ?? 'Request failed. Please try again.');
+  }
+
+  // =========================
+  // 🔐 LOGOUT
+  // =========================
+  Future<void> logout() async {
+    await supabase.auth.signOut();
+  }
+
+  // =========================
+  // 🔐 FORGOT PASSWORD (RESET LINK)
+  // =========================
+  Future<void> forgotPassword(String email) async {
+    try {
+      await supabase.auth.resetPasswordForEmail(email);
+    } on AuthException catch (e) {
+      throw Exception(e.message);
+    } catch (e) {
+      throw Exception("Failed to send reset link");
+    }
+  }
+
+  // =========================
+  // 🔐 CURRENT USER
+  // =========================
+  User? getCurrentUser() {
+    return supabase.auth.currentUser;
+  }
+
+  // =========================
+  // 🔐 SESSION
+  // =========================
+  Session? getSession() {
+    return supabase.auth.currentSession;
   }
 }

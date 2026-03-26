@@ -3,9 +3,6 @@ import authMiddleware from "../middleware/authMiddleware.js";
 import {
   createWorkout,
   deleteWorkout,
-import {
-  createWorkout,
-  deleteWorkout,
   getWorkoutById,
   getWorkouts,
   updateWorkout,
@@ -13,15 +10,22 @@ import {
 
 const router = express.Router();
 
+// 🔐 Protect all routes
 router.use(authMiddleware);
+
+// ➕ Create workout
 router.post("/", createWorkout);
+
+// 📥 Get all workouts (for logged-in user)
 router.get("/", getWorkouts);
+
+// 🔍 Get single workout
+router.get("/:id", getWorkoutById);
+
+// ✏️ Update workout
 router.put("/:id", updateWorkout);
+
+// ❌ Delete workout
 router.delete("/:id", deleteWorkout);
-router.post("/", createWorkout);
-router.get("/:userId", getWorkouts);
-router.get("/:userId/:workoutId", getWorkoutById);
-router.put("/:workoutId", updateWorkout);
-router.delete("/:workoutId", deleteWorkout);
 
 export default router;

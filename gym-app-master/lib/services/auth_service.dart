@@ -1,46 +1,69 @@
-import 'package:shared_preferences/shared_preferences.dart';
-import 'api_service.dart';
+import 'package:flutter/foundation.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthService {
-  final _api = ApiService.instance;
-  static const _tokenKey = 'auth_token';
-  static const _userKey = 'current_user';
+  final SupabaseClient supabase = Supabase.instance.client;
 
-  Future<dynamic> signup(String username, String email, String password) async =>
-      _api.post('/auth/signup', body: {'username': username, 'email': email, 'password': password});
-
-  Future<dynamic> login(String email, String password) async {
-    final res = await _api.post('/auth/login', body: {'email': email, 'password': password});
-    final token = res['data']?['token'] as String?;
-    if (token != null) await saveToken(token);
-    return res;
+  // ✅ LOGIN
+  Future<void> login(String email, String password) async {
+    try {
+      await supabase.auth.signInWithPassword(
+        email: email,
+        password: password,
+      );
+    } on AuthException catch (e) {
+      throw Exception(e.message);
+    }
   }
 
-  Future<dynamic> logout() async {
-    await clearToken();
-    return {'success': true};
+  // ✅ SIGNUP
+  Future<void> signup(String name, String email, String password) async {
+    try {
+      await supabase.auth.signUp(
+        email: email,
+        password: password,
+        data: {'name': name},
+      );
+    } on AuthException catch (e) {
+      throw Exception(e.message);
+    }
   }
 
-  Future<dynamic> forgotPassword(String email) async => _api.post('/auth/forgot-password', body: {'email': email});
-  Future<dynamic> verifyOtp(String email, String token) async =>
-      _api.post('/auth/verify-otp', body: {'email': email, 'token': token});
-  Future<dynamic> resetPassword(String password, String accessToken) async =>
-      _api.post('/auth/reset-password', body: {'password': password, 'accessToken': accessToken});
-  Future<dynamic> getCurrentUser(String userId) async => _api.get('/auth/profile?userId=$userId');
-
-  static Future<void> saveToken(String token) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_tokenKey, token);
+  // ✅ LOGOUT
+  Future<void> logout() async {
+    try {
+      await supabase.auth.signOut();
+    } on AuthException catch (e) {
+      throw Exception(e.message);
+    }
   }
 
-  static Future<String?> getToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_tokenKey);
+  // ✅ FORGOT PASSWORD
+  Future<void> forgotPassword(String email) async {
+    try {
+      final String redirectTo = kIsWeb
+          ? 'http://localhost:3000/#/reset-password'
+          : 'myapp://reset-password';
+
+      await supabase.auth.resetPasswordForEmail(
+        email,
+        redirectTo: redirectTo,
+      );
+    } on AuthException catch (e) {
+      throw Exception(e.message);
+    } catch (e) {
+      throw Exception("Failed to send reset link: $e");
+    }
   }
 
-  static Future<void> clearToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_tokenKey);
-    await prefs.remove(_userKey);
+  // ✅ UPDATE PASSWORD
+  Future<void> updatePassword(String newPassword) async {
+    try {
+      await supabase.auth.updateUser(
+        UserAttributes(password: newPassword),
+      );
+    } on AuthException catch (e) {
+      throw Exception(e.message);
+    }
   }
 }
