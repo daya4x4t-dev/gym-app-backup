@@ -6,6 +6,7 @@ import 'package:gym/models/stat_model.dart';
 import 'package:gym/models/brand_model.dart';
 import 'package:gym/utils/app_theme.dart';
 import 'package:gym/widgets/stat_card.dart';
+import 'package:gym/screens/local_clash_screen.dart';
 
 class HomeDashboard extends StatefulWidget {
   const HomeDashboard({super.key});
@@ -56,8 +57,8 @@ class _HomeDashboardState extends State<HomeDashboard> {
       final next = (_currentCarouselPage + 1) % _carouselItemCount;
       _carouselController.animateToPage(
         next,
-        duration: const Duration(milliseconds: 650),
-        curve: Curves.easeInOutCubic,
+        duration: const Duration(milliseconds: 800),
+        curve: Curves.fastOutSlowIn,
       );
     });
   }
@@ -106,10 +107,9 @@ class _HomeDashboardState extends State<HomeDashboard> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // Height is fixed so the PageView has a measured constraint.
-        // 185 is enough for both cards without overflow.
-        SizedBox(
-          height: 188,
+        // BoxConstraints handles varying text sizes without strict overflow
+        Container(
+          constraints: const BoxConstraints(minHeight: 188, maxHeight: 220),
           child: PageView.builder(
             controller: _carouselController,
             itemCount: _carouselItemCount,
@@ -124,8 +124,8 @@ class _HomeDashboardState extends State<HomeDashboard> {
                   // Horizontal margin between cards
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
                   child: index == 0
-                      ? _FeaturedBannerCard()
-                      : _LocalClashCard(),
+                      ? const _FeaturedBannerCard()
+                      : const _LocalClashCard(),
                 ),
               );
             },
@@ -417,12 +417,15 @@ class _HomeDashboardState extends State<HomeDashboard> {
   Widget _buildWorkoutsGrid() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Row(
-        children: [
-          Expanded(child: _WorkoutRefinedCard(workout: _workouts[0])),
-          const SizedBox(width: 14),
-          Expanded(child: _WorkoutRefinedCard(workout: _workouts[1])),
-        ],
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(child: _WorkoutRefinedCard(workout: _workouts[0])),
+            const SizedBox(width: 14),
+            Expanded(child: _WorkoutRefinedCard(workout: _workouts[1])),
+          ],
+        ),
       ),
     );
   }
@@ -487,6 +490,7 @@ class _FeaturedBannerCard extends StatelessWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         // Badge
                         Container(
@@ -637,6 +641,7 @@ class _LocalClashCard extends StatelessWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         // Badge
                         Container(
@@ -687,7 +692,7 @@ class _LocalClashCard extends StatelessWidget {
                         const SizedBox(height: 12),
                         // Play Now button
                         ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const LocalClashScreen())),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFFE53935),
                             foregroundColor: Colors.white,
@@ -809,7 +814,7 @@ class _WorkoutRefinedCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(24),
       clipBehavior: Clip.hardEdge,
       child: Container(
-        height: 210,
+        constraints: const BoxConstraints(minHeight: 210),
         decoration: BoxDecoration(
           color: AppTheme.textDark.withAlpha(230),
           boxShadow: [
@@ -821,6 +826,7 @@ class _WorkoutRefinedCard extends StatelessWidget {
         ),
         child: Container(
           padding: const EdgeInsets.all(14),
+          constraints: const BoxConstraints(minHeight: 210),
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [Colors.black.withAlpha(210), Colors.transparent],
@@ -831,6 +837,7 @@ class _WorkoutRefinedCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisSize: MainAxisSize.min,
             children: [
               // Tag chip
               Container(

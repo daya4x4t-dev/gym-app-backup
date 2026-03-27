@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'package:gym/utils/app_theme.dart';
 import 'package:gym/widgets/stat_card.dart';
+import 'package:gym/screens/local_clash_screen.dart';
 
 class ActivityProgressScreen extends StatefulWidget {
   const ActivityProgressScreen({super.key});
@@ -230,7 +231,7 @@ class _ActivityProgressScreenState extends State<ActivityProgressScreen>
           ),
           // CTA Button
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const LocalClashScreen())),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppTheme.orangeCalories,
               foregroundColor: Colors.white,

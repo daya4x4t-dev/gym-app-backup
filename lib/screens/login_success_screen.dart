@@ -1,28 +1,44 @@
 import 'package:flutter/material.dart';
 import '../utils/auth_background.dart';
 import '../utils/onboarding_service.dart';
-import '../widgets/custom_button.dart';
 import 'onboarding/onboarding_flow.dart';
 import 'app_onboarding/app_onboarding_flow.dart';
 
-class LoginSuccessScreen extends StatelessWidget {
+class LoginSuccessScreen extends StatefulWidget {
   const LoginSuccessScreen({super.key});
 
-  Future<void> _handleContinue(BuildContext context) async {
-    final isNew = await OnboardingService.isNewUser();
-    if (!context.mounted) return;
+  @override
+  State<LoginSuccessScreen> createState() => _LoginSuccessScreenState();
+}
 
+class _LoginSuccessScreenState extends State<LoginSuccessScreen> {
+
+  @override
+  void initState() {
+    super.initState();
+    _startDelay(); // 🔥 start timer when screen loads
+  }
+
+  Future<void> _startDelay() async {
+    // ⏳ wait 5 seconds
+    await Future.delayed(const Duration(seconds: 3));
+
+    // 🔍 check if new user
+    final isNew = await OnboardingService.isNewUser();
+
+    // ⚠️ important safety check
+    if (!mounted) return;
+
+    // 🚀 navigate based on user type
     if (isNew) {
-      // New user → collect details first, then app onboarding
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (_) => const OnboardingFlow()),
-        (_) => false,
+            (_) => false,
       );
     } else {
-      // Returning user → go straight to 3-slide app onboarding
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (_) => const AppOnboardingFlow()),
-        (_) => false,
+            (_) => false,
       );
     }
   }
@@ -36,7 +52,8 @@ class LoginSuccessScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // ── Success Icon ──────────────────────────────────────────────
+
+              // ✅ Success Icon
               Container(
                 width: 100,
                 height: 100,
@@ -56,9 +73,10 @@ class LoginSuccessScreen extends StatelessWidget {
                   ),
                 ),
               ),
+
               const SizedBox(height: 40),
 
-              // ── Title ─────────────────────────────────────────────────────
+              // ✅ Title
               const Text(
                 'Login Successful',
                 style: TextStyle(
@@ -69,24 +87,28 @@ class LoginSuccessScreen extends StatelessWidget {
                 ),
                 textAlign: TextAlign.center,
               ),
+
               const SizedBox(height: 12),
 
-              // ── Subtitle ──────────────────────────────────────────────────
+              // ✅ Subtitle
               Text(
                 "Welcome back! Let's start your workout.",
                 style: TextStyle(
                   color: Colors.white.withValues(alpha: 0.6),
                   fontSize: 16,
-                  fontWeight: FontWeight.w400,
                 ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 60),
 
-              // ── Primary Button ─────────────────────────────────────────────
-              CustomButton(
-                text: 'CONTINUE TO DASHBOARD',
-                onTap: () => _handleContinue(context),
+              const SizedBox(height: 40),
+
+              // 🔥 Optional UX improvement
+              const Text(
+                "Ready to throttle your fitness?",
+                style: TextStyle(
+                  color: Colors.red,
+                  fontSize: 14,
+                ),
               ),
             ],
           ),

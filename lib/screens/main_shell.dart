@@ -79,7 +79,7 @@ class _MainShellState extends State<MainShell>
   // ─── Bottom Navigation Bar ───────────────────────────────────────────────
   Widget _buildBottomNav() {
     return Container(
-      height: 68,
+      height: 76,  // Increased from 68 for better spacing and touch area
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
@@ -163,7 +163,7 @@ class _MainShellState extends State<MainShell>
       behavior: HitTestBehavior.opaque,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8), // Increased vertical padding for larger touch target
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

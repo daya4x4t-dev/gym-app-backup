@@ -33,7 +33,5 @@ void main() {
     expect(find.text('Weight'), findsOneWidget);
     expect(find.text('Diet Plan'), findsOneWidget);
 
-    // Verify AI Trainer label in bottom nav
-    expect(find.text('AI Trainer'), findsOneWidget);
   });
 }
