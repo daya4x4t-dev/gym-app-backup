@@ -1,69 +1,59 @@
-import 'package:flutter/foundation.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'api_service.dart';
 
 class AuthService {
-  final SupabaseClient supabase = Supabase.instance.client;
+  final ApiService _api = ApiService.instance;
+  static const _userEmailKey = 'user_email';
 
-  // ✅ LOGIN
   Future<void> login(String email, String password) async {
-    try {
-      await supabase.auth.signInWithPassword(
-        email: email,
-        password: password,
-      );
-    } on AuthException catch (e) {
-      throw Exception(e.message);
+    final response = await _api.post('/api/auth/login', body: {
+      'email': email,
+      'password': password,
+    });
+
+    final token = response['data']?['token'] as String?;
+    if (token == null || token.isEmpty) {
+      throw Exception('Login failed: missing token');
     }
+
+    await _api.saveToken(token);
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_userEmailKey, email);
   }
 
-  // ✅ SIGNUP
   Future<void> signup(String name, String email, String password) async {
-    try {
-      await supabase.auth.signUp(
-        email: email,
-        password: password,
-        data: {'name': name},
-      );
-    } on AuthException catch (e) {
-      throw Exception(e.message);
-    }
+    await _api.post('/api/auth/signup', body: {
+      'name': name,
+      'email': email,
+      'password': password,
+    });
   }
 
-  // ✅ LOGOUT
   Future<void> logout() async {
-    try {
-      await supabase.auth.signOut();
-    } on AuthException catch (e) {
-      throw Exception(e.message);
-    }
+    await _api.clearToken();
   }
 
-  // ✅ FORGOT PASSWORD
   Future<void> forgotPassword(String email) async {
-    try {
-      final String redirectTo = kIsWeb
-          ? 'http://localhost:3000/#/reset-password'
-          : 'myapp://reset-password';
-
-      await supabase.auth.resetPasswordForEmail(
-        email,
-        redirectTo: redirectTo,
-      );
-    } on AuthException catch (e) {
-      throw Exception(e.message);
-    } catch (e) {
-      throw Exception("Failed to send reset link: $e");
-    }
+    await _api.post('/api/auth/forgot-password', body: {
+      'email': email,
+    });
   }
 
-  // ✅ UPDATE PASSWORD
-  Future<void> updatePassword(String newPassword) async {
-    try {
-      await supabase.auth.updateUser(
-        UserAttributes(password: newPassword),
-      );
-    } on AuthException catch (e) {
-      throw Exception(e.message);
-    }
+  Future<void> resetPassword({
+    required String token,
+    required String newPassword,
+    required String confirmPassword,
+  }) async {
+    await _api.post('/api/auth/reset-password', body: {
+      'token': token,
+      'password': newPassword,
+      'confirmPassword': confirmPassword,
+    });
+  }
+
+  Future<bool> hasSession() async {
+    final token = await _api.getToken();
+    return token != null && token.isNotEmpty;
   }
 }
