@@ -1,0 +1,17 @@
+﻿Analyzing gym...                                                
+
+  error - Invalid constant value - lib\screens\activity_progress_screen.dart:657:24 - invalid_constant
+  error - Undefined name '_textDark' - lib\screens\activity_progress_screen.dart:657:24 - undefined_identifier
+  error - Invalid constant value - lib\screens\activity_progress_screen.dart:666:24 - invalid_constant
+  error - Undefined name '_textGrey' - lib\screens\activity_progress_screen.dart:666:24 - undefined_identifier
+  error - Invalid constant value - lib\screens\activity_progress_screen.dart:721:16 - invalid_constant
+  error - Undefined name '_textGrey' - lib\screens\activity_progress_screen.dart:721:16 - undefined_identifier
+  error - Invalid constant value - lib\screens\activity_progress_screen.dart:749:20 - invalid_constant
+  error - Undefined name '_textGrey' - lib\screens\activity_progress_screen.dart:749:20 - undefined_identifier
+  error - Undefined name '_tealCarbs' - lib\screens\activity_progress_screen.dart:852:36 - undefined_identifier
+  error - Undefined name '_orangeCalories' - lib\screens\activity_progress_screen.dart:856:36 - undefined_identifier
+   info - Unnecessary 'const' keyword - lib\screens\home_dashboard.dart:107:24 - unnecessary_const
+  error - Invalid constant value - lib\screens\home_dashboard.dart:199:53 - invalid_constant
+  error - Undefined name '_textGrey' - lib\screens\home_dashboard.dart:199:53 - undefined_identifier
+   info - Unnecessary 'const' keyword - lib\screens\home_dashboard.dart:204:30 - unnecessary_const
+
