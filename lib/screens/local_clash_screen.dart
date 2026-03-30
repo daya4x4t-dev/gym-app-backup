@@ -323,7 +323,7 @@ class _LocalClashScreenState extends State<LocalClashScreen> {
         physics: const BouncingScrollPhysics(),
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
         itemCount: _nearbyClashes.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 12),
+        separatorBuilder: (_, _) => const SizedBox(width: 12),
         itemBuilder: (context, i) {
           final c = _nearbyClashes[i];
           return _ClashNearbyCard(clash: c);

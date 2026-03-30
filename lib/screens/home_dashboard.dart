@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:gym/screens/settings_screen.dart';
-import 'package:gym/models/workout_model.dart';
 import 'package:gym/models/stat_model.dart';
 import 'package:gym/models/brand_model.dart';
 import 'package:gym/utils/app_theme.dart';
@@ -16,37 +15,108 @@ class HomeDashboard extends StatefulWidget {
 }
 
 class _HomeDashboardState extends State<HomeDashboard> {
+  // ─────────────────────────────────────────────────────────
+  // DATA
+  // ─────────────────────────────────────────────────────────
   static const _stats = [
-    FitnessStat(icon: Icons.favorite_rounded,           label: 'Heart Rate', color: Color(0xFFFFF1F1), iconColor: Colors.red),
-    FitnessStat(icon: Icons.local_fire_department_rounded, label: 'Calories',  color: Color(0xFFFFF7EF), iconColor: Colors.orange),
-    FitnessStat(icon: Icons.directions_walk_rounded,    label: 'Steps',      color: Color(0xFFF1FFF1), iconColor: Colors.green),
-    FitnessStat(icon: Icons.monitor_weight_rounded,     label: 'Weight',     color: Color(0xFFF1F7FF), iconColor: Colors.blue),
-    FitnessStat(icon: Icons.restaurant_menu_rounded,    label: 'Diet Plan',  color: Color(0xFFFFFDE3), iconColor: Colors.amber),
+    FitnessStat(
+        icon: Icons.favorite_rounded,
+        label: 'Heart Rate',
+        value: '78 bpm',
+        color: Color(0xFFFFF1F1),
+        iconColor: Colors.red),
+    FitnessStat(
+        icon: Icons.local_fire_department_rounded,
+        label: 'Calories',
+        value: '420 kcal',
+        color: Color(0xFFFFF7EF),
+        iconColor: Colors.orange),
+    FitnessStat(
+        icon: Icons.directions_walk_rounded,
+        label: 'Steps',
+        value: '6,240',
+        color: Color(0xFFF1FFF1),
+        iconColor: Colors.green),
+    FitnessStat(
+        icon: Icons.monitor_weight_rounded,
+        label: 'Weight',
+        value: '72 kg',
+        color: Color(0xFFF1F7FF),
+        iconColor: Colors.blue),
+    FitnessStat(
+        icon: Icons.restaurant_menu_rounded,
+        label: 'Diet Plan',
+        value: 'On Track',
+        color: Color(0xFFFFFDE3),
+        iconColor: Colors.amber),
   ];
 
   static const _brands = [
-    GymBrand(name: 'Life Fitness',   icon: Icons.bolt_rounded),
-    GymBrand(name: 'Technogym',      icon: Icons.sports_gymnastics_rounded),
-    GymBrand(name: 'Rogue',          icon: Icons.fitness_center_rounded),
+    GymBrand(name: 'Life Fitness', icon: Icons.bolt_rounded),
+    GymBrand(name: 'Technogym', icon: Icons.sports_gymnastics_rounded),
+    GymBrand(name: 'Rogue', icon: Icons.fitness_center_rounded),
     GymBrand(name: 'Energy Fitness', icon: Icons.electric_bolt_rounded),
-    GymBrand(name: 'NordicTrack',    icon: Icons.run_circle_rounded),
+    GymBrand(name: 'NordicTrack', icon: Icons.run_circle_rounded),
   ];
 
+  // Enhanced workout list with category & color
   static const _workouts = [
-    Workout(title: 'Deadlift',    tag: 'Dead Lift',   level: 'Advanced',     duration: '45 min'),
-    Workout(title: 'Bench Press', tag: 'Bench Press', level: 'Intermediate', duration: '30 min'),
+    _WorkoutData(
+      title: 'Deadlift',
+      tag: 'Dead Lift',
+      level: 'Advanced',
+      duration: '45 min',
+      category: 'Strength',
+      gradientStart: Color(0xFF1C1C2E),
+      gradientEnd: Color(0xFF2D1B69),
+      accentColor: Color(0xFF7C3AED),
+    ),
+    _WorkoutData(
+      title: 'Bench Press',
+      tag: 'Chest',
+      level: 'Intermediate',
+      duration: '30 min',
+      category: 'Strength',
+      gradientStart: Color(0xFF1A1A2E),
+      gradientEnd: Color(0xFF16213E),
+      accentColor: Color(0xFF0F3460),
+    ),
+    _WorkoutData(
+      title: 'Squats',
+      tag: 'Legs',
+      level: 'Intermediate',
+      duration: '40 min',
+      category: 'Cardio',
+      gradientStart: Color(0xFF1B2838),
+      gradientEnd: Color(0xFF0F2027),
+      accentColor: Color(0xFF00B4D8),
+    ),
+    _WorkoutData(
+      title: 'Pull Ups',
+      tag: 'Back',
+      level: 'Advanced',
+      duration: '20 min',
+      category: 'Strength',
+      gradientStart: Color(0xFF1F1B24),
+      gradientEnd: Color(0xFF2D1515),
+      accentColor: Color(0xFFE53935),
+    ),
   ];
 
-  // Carousel
+  static const _categories = ['All', 'Strength', 'Cardio', 'Flexibility', 'HIIT'];
+
+  // ─────────────────────────────────────────────────────────
+  // STATE
+  // ─────────────────────────────────────────────────────────
   static const int _carouselItemCount = 2;
   late final PageController _carouselController;
   int _currentCarouselPage = 0;
   Timer? _carouselTimer;
+  int _selectedCategory = 0;
 
   @override
   void initState() {
     super.initState();
-    // viewportFraction < 1 creates the "peek at next card" look.
     _carouselController = PageController(viewportFraction: 0.88);
     _startAutoScroll();
   }
@@ -71,7 +141,7 @@ class _HomeDashboardState extends State<HomeDashboard> {
   }
 
   // ─────────────────────────────────────────────────────────
-  // Root build
+  // ROOT BUILD
   // ─────────────────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
@@ -86,15 +156,102 @@ class _HomeDashboardState extends State<HomeDashboard> {
               _buildHeader(context),
               _buildGreeting(),
               _buildSearchBar(),
+              _buildProgressBanner(),
               _buildFeaturedCarousel(),
               _buildStatsGroup(),
               _buildSectionHeader('Top Gym Brand'),
               _buildBrandList(),
-              _buildSectionHeader('Top Workout'),
+              _buildSectionHeader('Top Workouts'),
+              _buildCategoryFilter(),
               _buildWorkoutsGrid(),
               const SizedBox(height: 110),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  // ─────────────────────────────────────────────────────────
+  // PROGRESS BANNER  (new)
+  // ─────────────────────────────────────────────────────────
+  Widget _buildProgressBanner() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 4, 20, 0),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [Color(0xFFE53935), Color(0xFFB71C1C)],
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+          ),
+          borderRadius: BorderRadius.circular(18),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFFE53935).withAlpha(80),
+              blurRadius: 16,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: Colors.white.withAlpha(25),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.trending_up_rounded,
+                  color: Colors.white, size: 24),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Weekly Goal: 4 / 5 Workouts',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: LinearProgressIndicator(
+                      value: 0.8,
+                      minHeight: 6,
+                      backgroundColor: Colors.white.withAlpha(50),
+                      valueColor:
+                      const AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 12),
+            Container(
+              padding:
+              const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.white.withAlpha(30),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Text(
+                '80%',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -107,7 +264,6 @@ class _HomeDashboardState extends State<HomeDashboard> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // BoxConstraints handles varying text sizes without strict overflow
         Container(
           constraints: const BoxConstraints(minHeight: 188, maxHeight: 220),
           child: PageView.builder(
@@ -121,8 +277,8 @@ class _HomeDashboardState extends State<HomeDashboard> {
                 duration: const Duration(milliseconds: 350),
                 curve: Curves.easeOut,
                 child: Padding(
-                  // Horizontal margin between cards
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                  padding:
+                  const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
                   child: index == 0
                       ? const _FeaturedBannerCard()
                       : const _LocalClashCard(),
@@ -168,17 +324,35 @@ class _HomeDashboardState extends State<HomeDashboard> {
           GestureDetector(
             onTap: () => Navigator.push(
                 context, AppTheme.fadeSlideRoute(const SettingsScreen())),
-            child: Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border:
-                    Border.all(color: AppTheme.accentRed.withAlpha(51), width: 2),
-              ),
-              child: const CircleAvatar(
-                radius: 26,
-                backgroundColor: Color(0xFFEEEEEE),
-                child: Icon(Icons.person, color: AppTheme.textGreyLight),
-              ),
+            child: Stack(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                        color: AppTheme.accentRed.withAlpha(51), width: 2),
+                  ),
+                  child: const CircleAvatar(
+                    radius: 26,
+                    backgroundColor: Color(0xFFEEEEEE),
+                    child: Icon(Icons.person, color: AppTheme.textGreyLight),
+                  ),
+                ),
+                // Online indicator dot
+                Positioned(
+                  right: 2,
+                  bottom: 2,
+                  child: Container(
+                    width: 12,
+                    height: 12,
+                    decoration: BoxDecoration(
+                      color: Colors.green,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 2),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
           const SizedBox(width: 12),
@@ -205,21 +379,42 @@ class _HomeDashboardState extends State<HomeDashboard> {
               ],
             ),
           ),
-          _circleIconBtn(Icons.notifications_none_rounded),
+          _circleIconBtn(Icons.notifications_none_rounded, badge: true),
         ],
       ),
     );
   }
 
-  Widget _circleIconBtn(IconData icon) => Container(
+  Widget _circleIconBtn(IconData icon, {bool badge = false}) => Stack(
+    children: [
+      Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: Colors.white,
           shape: BoxShape.circle,
-          boxShadow: [BoxShadow(color: Colors.black.withAlpha(10), blurRadius: 10)],
+          boxShadow: [
+            BoxShadow(
+                color: Colors.black.withAlpha(10), blurRadius: 10)
+          ],
         ),
         child: Icon(icon, color: AppTheme.textDark, size: 24),
-      );
+      ),
+      if (badge)
+        Positioned(
+          top: 8,
+          right: 8,
+          child: Container(
+            width: 10,
+            height: 10,
+            decoration: BoxDecoration(
+              color: AppTheme.accentRed,
+              shape: BoxShape.circle,
+              border: Border.all(color: Colors.white, width: 1.5),
+            ),
+          ),
+        ),
+    ],
+  );
 
   // ─────────────────────────────────────────────────────────
   // GREETING
@@ -230,7 +425,7 @@ class _HomeDashboardState extends State<HomeDashboard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: const [
-          Text('Good Morning',
+          Text('Good Morning 💪',
               style: TextStyle(
                   color: AppTheme.textDark,
                   fontSize: 20,
@@ -340,7 +535,7 @@ class _HomeDashboardState extends State<HomeDashboard> {
                       iconColor: stat.iconColor,
                       iconBgColor: stat.color,
                       title: stat.label,
-                      value: '',
+                      value: stat.value,
                     ),
                     if (stat != _stats.last) const SizedBox(width: 14),
                   ],
@@ -388,11 +583,19 @@ class _HomeDashboardState extends State<HomeDashboard> {
                   color: AppTheme.textDark,
                   fontSize: 19,
                   fontWeight: FontWeight.w900)),
-          const Text('View All',
-              style: TextStyle(
-                  color: AppTheme.accentRed,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w800)),
+          Container(
+            padding:
+            const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: AppTheme.accentRed.withAlpha(15),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: const Text('View All',
+                style: TextStyle(
+                    color: AppTheme.accentRed,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w800)),
+          ),
         ],
       ),
     );
@@ -407,33 +610,124 @@ class _HomeDashboardState extends State<HomeDashboard> {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       physics: const BouncingScrollPhysics(),
       child:
-          Row(children: _brands.map((b) => _BrandItem(brand: b)).toList()),
+      Row(children: _brands.map((b) => _BrandItem(brand: b)).toList()),
     );
   }
 
   // ─────────────────────────────────────────────────────────
-  // WORKOUTS GRID
+  // CATEGORY FILTER  (new)
   // ─────────────────────────────────────────────────────────
-  Widget _buildWorkoutsGrid() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(child: _WorkoutRefinedCard(workout: _workouts[0])),
-            const SizedBox(width: 14),
-            Expanded(child: _WorkoutRefinedCard(workout: _workouts[1])),
-          ],
-        ),
+  Widget _buildCategoryFilter() {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+      physics: const BouncingScrollPhysics(),
+      child: Row(
+        children: List.generate(_categories.length, (i) {
+          final selected = i == _selectedCategory;
+          return GestureDetector(
+            onTap: () => setState(() => _selectedCategory = i),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 250),
+              margin: const EdgeInsets.only(right: 10),
+              padding:
+              const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
+              decoration: BoxDecoration(
+                color:
+                selected ? AppTheme.accentRed : Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: selected
+                    ? [
+                  BoxShadow(
+                      color: AppTheme.accentRed.withAlpha(80),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4))
+                ]
+                    : [
+                  BoxShadow(
+                      color: Colors.black.withAlpha(8),
+                      blurRadius: 6)
+                ],
+              ),
+              child: Text(
+                _categories[i],
+                style: TextStyle(
+                  color: selected ? Colors.white : AppTheme.textGrey,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          );
+        }),
       ),
     );
   }
 
+  // ─────────────────────────────────────────────────────────
+  // WORKOUTS GRID  (2 rows × 2 cards)
+  // ─────────────────────────────────────────────────────────
+  Widget _buildWorkoutsGrid() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        children: [
+          // Row 1
+          IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(child: _WorkoutRefinedCard(workout: _workouts[0])),
+                const SizedBox(width: 14),
+                Expanded(child: _WorkoutRefinedCard(workout: _workouts[1])),
+              ],
+            ),
+          ),
+          const SizedBox(height: 14),
+          // Row 2
+          IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(child: _WorkoutRefinedCard(workout: _workouts[2])),
+                const SizedBox(width: 14),
+                Expanded(child: _WorkoutRefinedCard(workout: _workouts[3])),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 // ═══════════════════════════════════════════════════════════
-// FEATURED BANNER CARD  (extracted widget — avoids long build method)
+// WORKOUT DATA MODEL  (internal, enhanced)
+// ═══════════════════════════════════════════════════════════
+class _WorkoutData {
+  final String title;
+  final String tag;
+  final String level;
+  final String duration;
+  final String category;
+  final Color gradientStart;
+  final Color gradientEnd;
+  final Color accentColor;
+
+  const _WorkoutData({
+    required this.title,
+    required this.tag,
+    required this.level,
+    required this.duration,
+    required this.category,
+    required this.gradientStart,
+    required this.gradientEnd,
+    required this.accentColor,
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// FEATURED BANNER CARD
 // ═══════════════════════════════════════════════════════════
 class _FeaturedBannerCard extends StatelessWidget {
   const _FeaturedBannerCard();
@@ -453,7 +747,6 @@ class _FeaturedBannerCard extends StatelessWidget {
         ),
         child: Stack(
           children: [
-            // Decorative red circle accent
             Positioned(
               right: -30,
               bottom: -30,
@@ -466,7 +759,6 @@ class _FeaturedBannerCard extends StatelessWidget {
                 ),
               ),
             ),
-            // Shadow of red circle
             Positioned(
               right: 20,
               top: 10,
@@ -479,20 +771,17 @@ class _FeaturedBannerCard extends StatelessWidget {
                 ),
               ),
             ),
-            // Foreground content
             Padding(
               padding: const EdgeInsets.fromLTRB(22, 18, 16, 18),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // Text side
                   Expanded(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        // Badge
                         Container(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 8, vertical: 3),
@@ -542,7 +831,6 @@ class _FeaturedBannerCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  // Icons side
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -565,18 +853,18 @@ class _FeaturedBannerCard extends StatelessWidget {
   }
 
   Widget _glowIcon(IconData icon, Color color) => Container(
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: color.withAlpha(20),
-          border: Border.all(color: color.withAlpha(60), width: 1),
-          boxShadow: [
-            BoxShadow(color: color.withAlpha(50), blurRadius: 8, spreadRadius: 1)
-          ],
-        ),
-        child: Icon(icon, color: color, size: 19),
-      );
+    width: 40,
+    height: 40,
+    decoration: BoxDecoration(
+      shape: BoxShape.circle,
+      color: color.withAlpha(20),
+      border: Border.all(color: color.withAlpha(60), width: 1),
+      boxShadow: [
+        BoxShadow(
+            color: color.withAlpha(50), blurRadius: 8, spreadRadius: 1)
+      ],
+    ),
+  );
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -605,7 +893,6 @@ class _LocalClashCard extends StatelessWidget {
         ),
         child: Stack(
           children: [
-            // Glow circles (inside clip so no overflow)
             Positioned(
               right: -24,
               top: -24,
@@ -630,20 +917,17 @@ class _LocalClashCard extends StatelessWidget {
                 ),
               ),
             ),
-            // Content
             Padding(
               padding: const EdgeInsets.fromLTRB(22, 18, 16, 18),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // Left: text + button
                   Expanded(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        // Badge
                         Container(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 8, vertical: 3),
@@ -651,8 +935,7 @@ class _LocalClashCard extends StatelessWidget {
                             color: const Color(0xFFE53935).withAlpha(38),
                             borderRadius: BorderRadius.circular(6),
                             border: Border.all(
-                                color:
-                                    const Color(0xFFE53935).withAlpha(100),
+                                color: const Color(0xFFE53935).withAlpha(100),
                                 width: 1),
                           ),
                           child: const Text('🎮  MULTIPLAYER',
@@ -690,15 +973,17 @@ class _LocalClashCard extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 12),
-                        // Play Now button
                         ElevatedButton(
-                          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const LocalClashScreen())),
+                          onPressed: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => const LocalClashScreen())),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFFE53935),
                             foregroundColor: Colors.white,
                             elevation: 4,
                             shadowColor:
-                                const Color(0xFFE53935).withAlpha(120),
+                            const Color(0xFFE53935).withAlpha(120),
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 18, vertical: 10),
                             shape: RoundedRectangleBorder(
@@ -722,15 +1007,14 @@ class _LocalClashCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 10),
-                  // Right: gaming glow icons
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      _glowIcon(Icons.emoji_events_rounded,
-                          const Color(0xFFFFD700)),
+                      _glowIcon(
+                          Icons.emoji_events_rounded, const Color(0xFFFFD700)),
                       const SizedBox(height: 10),
-                      _glowIcon(Icons.leaderboard_rounded,
-                          const Color(0xFF64B5F6)),
+                      _glowIcon(
+                          Icons.leaderboard_rounded, const Color(0xFF64B5F6)),
                       const SizedBox(height: 10),
                       _glowIcon(
                           Icons.group_rounded, const Color(0xFFE53935)),
@@ -746,19 +1030,19 @@ class _LocalClashCard extends StatelessWidget {
   }
 
   Widget _glowIcon(IconData icon, Color color) => Container(
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: color.withAlpha(20),
-          border: Border.all(color: color.withAlpha(65), width: 1),
-          boxShadow: [
-            BoxShadow(
-                color: color.withAlpha(55), blurRadius: 8, spreadRadius: 1)
-          ],
-        ),
-        child: Icon(icon, color: color, size: 19),
-      );
+    width: 40,
+    height: 40,
+    decoration: BoxDecoration(
+      shape: BoxShape.circle,
+      color: color.withAlpha(20),
+      border: Border.all(color: color.withAlpha(65), width: 1),
+      boxShadow: [
+        BoxShadow(
+            color: color.withAlpha(55), blurRadius: 8, spreadRadius: 1)
+      ],
+    ),
+    child: Icon(icon, color: color, size: 19),
+  );
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -786,8 +1070,9 @@ class _BrandItem extends StatelessWidget {
               ],
               border: Border.all(color: Colors.grey.shade50),
             ),
-            child:
-                Center(child: Icon(brand.icon, color: Colors.grey.shade400, size: 28)),
+            child: Center(
+                child: Icon(brand.icon,
+                    color: Colors.grey.shade400, size: 28)),
           ),
           const SizedBox(height: 10),
           Text(brand.name,
@@ -802,11 +1087,22 @@ class _BrandItem extends StatelessWidget {
 }
 
 // ═══════════════════════════════════════════════════════════
-// WORKOUT REFINED CARD
+// WORKOUT REFINED CARD  (enhanced with level badge + category chip)
 // ═══════════════════════════════════════════════════════════
 class _WorkoutRefinedCard extends StatelessWidget {
-  final Workout workout;
+  final _WorkoutData workout;
   const _WorkoutRefinedCard({required this.workout});
+
+  Color get _levelColor {
+    switch (workout.level) {
+      case 'Advanced':
+        return const Color(0xFFE53935);
+      case 'Intermediate':
+        return const Color(0xFFFF9800);
+      default:
+        return const Color(0xFF4CAF50);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -816,73 +1112,163 @@ class _WorkoutRefinedCard extends StatelessWidget {
       child: Container(
         constraints: const BoxConstraints(minHeight: 210),
         decoration: BoxDecoration(
-          color: AppTheme.textDark.withAlpha(230),
+          gradient: LinearGradient(
+            colors: [workout.gradientStart, workout.gradientEnd],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
           boxShadow: [
             BoxShadow(
-                color: Colors.black.withAlpha(28),
+                color: workout.accentColor.withAlpha(60),
                 blurRadius: 14,
                 offset: const Offset(0, 6))
           ],
         ),
-        child: Container(
-          padding: const EdgeInsets.all(14),
-          constraints: const BoxConstraints(minHeight: 210),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.black.withAlpha(210), Colors.transparent],
-              begin: Alignment.bottomCenter,
-              end: Alignment.topCenter,
-            ),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Tag chip
-              Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 9, vertical: 5),
+        child: Stack(
+          children: [
+            // Accent glow circle
+            Positioned(
+              right: -20,
+              top: -20,
+              child: Container(
+                width: 80,
+                height: 80,
                 decoration: BoxDecoration(
-                  color: AppTheme.accentRed,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.bolt_rounded,
-                        color: Colors.white, size: 11),
-                    const SizedBox(width: 3),
-                    Text(workout.tag.toUpperCase(),
-                        style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 9,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 0.5)),
-                  ],
+                  shape: BoxShape.circle,
+                  color: workout.accentColor.withAlpha(40),
                 ),
               ),
-              // Title + meta
-              Column(
+            ),
+            Padding(
+              padding: const EdgeInsets.all(14),
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(workout.title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w900)),
-                  const SizedBox(height: 3),
-                  Text('${workout.level} • ${workout.duration}',
-                      style: const TextStyle(
-                          color: Colors.white70,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600)),
+                  // Top row: tag chip + level badge
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // Tag
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 9, vertical: 5),
+                        decoration: BoxDecoration(
+                          color: AppTheme.accentRed,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.bolt_rounded,
+                                color: Colors.white, size: 11),
+                            const SizedBox(width: 3),
+                            Text(workout.tag.toUpperCase(),
+                                style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 9,
+                                    fontWeight: FontWeight.w900,
+                                    letterSpacing: 0.5)),
+                          ],
+                        ),
+                      ),
+                      // Level badge
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 5, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: _levelColor.withAlpha(35),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                              color: _levelColor.withAlpha(120), width: 1),
+                        ),
+                        child: Text(
+                          workout.level,
+                          style: TextStyle(
+                            color: _levelColor,
+                            fontSize: 8,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 65),
+                  // Bottom: title + meta + favourite
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(workout.title,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w900)),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Icon(Icons.timer_outlined,
+                              color: Colors.white60, size: 12),
+                          const SizedBox(width: 4),
+                          Text(workout.duration,
+                              style: const TextStyle(
+                                  color: Colors.white60,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600)),
+                          const SizedBox(width: 10),
+                          Icon(Icons.category_outlined,
+                              color: Colors.white60, size: 12),
+                          const SizedBox(width: 4),
+                          Text(workout.category,
+                              style: const TextStyle(
+                                  color: Colors.white60,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600)),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      // Action row
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 7),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withAlpha(20),
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                  color: Colors.white.withAlpha(40),
+                                  width: 1),
+                            ),
+                            child: const Text('Start',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w800)),
+                          ),
+                          Container(
+                            width: 32,
+                            height: 32,
+                            decoration: BoxDecoration(
+                              color: Colors.white.withAlpha(15),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                                Icons.favorite_border_rounded,
+                                color: Colors.white70,
+                                size: 16),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
